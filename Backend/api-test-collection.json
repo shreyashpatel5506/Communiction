@@ -1,0 +1,150 @@
+{
+  "info": {
+    "name": "Communication App API Tests",
+    "description": "Complete API testing collection for your communication app",
+    "version": "1.0.0"
+  },
+  "baseUrl": "http://localhost:5000",
+  "tests": {
+    "auth": {
+      "1_test_middleware": {
+        "method": "POST",
+        "url": "/api/auth/test",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "test": "data",
+          "email": "test@example.com"
+        },
+        "description": "Test if middleware is working properly"
+      },
+      "2_send_otp": {
+        "method": "POST",
+        "url": "/api/auth/send-Otp",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "test@example.com"
+        },
+        "description": "Send OTP to email"
+      },
+      "3_verify_otp": {
+        "method": "POST",
+        "url": "/api/auth/verify-Otp",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "test@example.com",
+          "otp": "123456"
+        },
+        "description": "Verify OTP (use OTP from console)"
+      },
+      "4_signup": {
+        "method": "POST",
+        "url": "/api/auth/signup",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "test@example.com",
+          "password": "password123",
+          "name": "Test User"
+        },
+        "description": "Create new user account"
+      },
+      "5_login": {
+        "method": "POST",
+        "url": "/api/auth/login",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "test@example.com",
+          "password": "password123"
+        },
+        "description": "Login user"
+      },
+      "6_check_auth": {
+        "method": "GET",
+        "url": "/api/auth/check",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "description": "Check if user is authenticated (requires login cookie)"
+      },
+      "7_update_profile": {
+        "method": "POST",
+        "url": "/api/auth/update-profile",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "name": "Updated Name",
+          "profilePicture": "base64_image_string_here"
+        },
+        "description": "Update user profile (requires login)"
+      },
+      "8_forgot_password": {
+        "method": "POST",
+        "url": "/api/auth/forgot-password",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "test@example.com",
+          "newPassword": "newpassword123"
+        },
+        "description": "Reset password"
+      },
+      "9_logout": {
+        "method": "POST",
+        "url": "/api/auth/logout",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "description": "Logout user"
+      }
+    },
+    "follower": {
+      "1_send_follow_request": {
+        "method": "POST",
+        "url": "/api/follower/send-request",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "usersendrequestId": "USER_ID_HERE"
+        },
+        "description": "Send follow request (requires login)"
+      },
+      "2_accept_request": {
+        "method": "POST",
+        "url": "/api/follower/accept-request",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "acceptrequestId": "USER_ID_HERE"
+        },
+        "description": "Accept follow request (requires login)"
+      },
+      "3_reject_request": {
+        "method": "POST",
+        "url": "/api/follower/reject-request",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "rejectrequestId": "USER_ID_HERE"
+        },
+        "description": "Reject follow request (requires login)"
+      }
+    },
+    "message": {
+      "note": "Message routes are currently commented out in the route file"
+    }
+  }
+}

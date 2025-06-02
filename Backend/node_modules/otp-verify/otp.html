@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OTP Confirmation</title>
+    <style>
+      body {
+        font-family: "Google Sans", Roboto, RobotoDraft, Helvetica, Arial,
+          sans-serif;
+      }
+      p {
+        margin: 0;
+        font-size: 14px;
+      }
+      .OuterDiv {
+        margin: auto;
+        width: 420px;
+        border: 1px solid black;
+        height: fit-content;
+        padding: 20px 0px;
+      }
+      .HeadingDiv {
+        text-align: center;
+        font-weight: bold;
+        font-size: 20px;
+        padding-bottom: 10px;
+      }
+      .LineDiv {
+        border: 0.8px solid #ccc;
+        background-color: #ccc;
+        width: 45%;
+        margin: auto;
+        border-radius: 5px;
+      }
+      .BodyDiv {
+        text-align: center;
+        margin-top: 40px;
+        padding: 0px 35px;
+      }
+      .OTPMsg {
+        margin-top: 12px;
+      }
+      .OTPDiv {
+        display: flex;
+        margin-left: 155.6px;
+      }
+      .OTP {
+        color: white;
+        background-color: #0096c5;
+        margin-top: 30px;
+        padding: 20px 35px;
+        border-radius: 2px;
+        font-size: 14px;
+        font-weight: 300;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="OuterDiv">
+      <div class="HeadingDiv">Verify your OTP</div>
+      <div class="LineDiv"></div>
+      <div class="BodyDiv">
+        <p class="Salutation">Dear User, {{message}}</p>
+        <p class="OTPMsg">Your OTP is</p>
+      </div>
+      <div class="OTPDiv"><p class="OTP">{{otp}}</p></div>
+    </div>
+  </body>
+</html>
