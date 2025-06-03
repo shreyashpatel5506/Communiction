@@ -125,5 +125,32 @@ export const unfollowuser = async(req , res) =>{
     }
 }
 
+export const getpendingrequestusers=async (req, res)=>{
+    
+    try{
+        const userId = req.user._id;
+        const pendingRequest = await PendingRequest.findOne({userId}).populate('PendingRequestIds');
+        res.status(200).json({
+            message:"Pending request users fetched",
+            success:true,
+            pendingRequest,
+        });
+    }catch(error){
+        res.status(500).json({message:error.message});
+    }
+}
 
+export const getsendingrequestuser = async (req, res)=>{
+    try{
+        const userId = req.user._id;
+        const sendingRequest = await SendingRequest.findOne({userId}).populate('PendingRequestIds');
+        res.status(200).json({
+            message:"Pending request users fetched",
+            success:true,
+            sendingRequest,
+        });
+    }catch(error){
+        res.status(500).json({message:error.message});
+    }
+}
 
