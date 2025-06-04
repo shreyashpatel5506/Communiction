@@ -5,8 +5,8 @@ import { fetchfollowersuser, fetchalluser, sendmessage, getmessage } from '../co
 const router = express.Router();
 
 router.get('/follwers',protectRoute,fetchfollowersuser);//for messages
-router.post('/alluser',protectRoute,fetchalluser);//for started follow any user 
+router.get('/alluser',protectRoute,fetchalluser);//for started follow any user 
 router.post('/send-message/:id',protectRoute,sendmessage);
-router.post('/get-message/:id',protectRoute,getmessage);
+router.get('/get-message/:id',protectRoute,getmessage);
 
 export default router;
