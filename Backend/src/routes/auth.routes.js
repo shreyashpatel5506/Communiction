@@ -28,7 +28,7 @@ router.post('/verify-Otp', verifyOTP);
 router.post('/signup', signup);
 router.post('/login', login);
 router.post('/update-profile', protectRoute, updateprofile);
-router.get('/check', protectRoute, checkauth);
+router.get('/check', checkauth);
 router.post('/logout', logout);
 router.post('/forgot-password', forgotPassword);
 
