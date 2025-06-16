@@ -14,8 +14,8 @@ export const useAuth = create((set) => ({
         try {
             const res = await axiosInstance.get('/auth/check');
 
-            set({ authuser: res.user });
             const authuser = res.data.user;
+            set({ authuser });
             localStorage.setItem('authuser', JSON.stringify(authuser));
             console.log("Auth user:", localStorage.getItem('authuser'));
             set({ isCheckAuth: false });
@@ -53,8 +53,11 @@ export const useAuth = create((set) => ({
     signup: async (email, password, name) => {
         try {
             const res = await axiosInstance.post('/auth/signup', { email, password, name });
-            set({ authuser: res.data.user });
+            const authuser = res.data.user;
+            set({ authuser });
             localStorage.setItem('authuser', JSON.stringify(authuser));
+            console.log("Auth user:", localStorage.getItem('authuser'));
+            set({ isSignup: true });
         } catch (error) {
             console.log(error);
         }
@@ -63,12 +66,23 @@ export const useAuth = create((set) => ({
     login: async (email, password) => {
         try {
             const res = await axiosInstance.post('/auth/login', { email, password });
-            set({ authuser: res.data.user });
             const authuser = res.data.user;
+            set({ authuser });
             localStorage.setItem('authuser', JSON.stringify(authuser));
             console.log("Auth user:", localStorage.getItem('authuser'));
         } catch (error) {
             console.log(error);
+        }
+    }
+    ,
+
+    forgotPassword: async (email) => {
+        try {
+            const res = await axiosInstance.post('/auth/forgot-password', { email, newPassword });
+            return res.data.message;
+        } catch (error) {
+            console.log(error);
+            throw error;
         }
     }
 })

@@ -1,33 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../StoreValues/useAuth.Store.js';
 import { Eye, EyeOff, Lock, Mail, MessageSquare, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import AuthImagePattern from '../components/AuthImagePattern.jsx';
 
 const Signuppage = () => {
-  const { sendOtp, verifyOtp, signup, isSignup, isSendOtp, isVerifyOtp } = useAuth();
+  const { sendOtp, verifyOtp, signup } = useAuth();
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     otp: ""
   });
+
   const [showPassword, setShowPassword] = useState(false);
 
-  const validatedata = () => {
-    if (!formData.name.trim()) {
-      toast.error("Full name is required");
-      return false;
-    }
+  // Step states
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const validateEmail = () => {
     if (!formData.email.trim()) {
       toast.error("Email is required");
       return false;
     }
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
       toast.error("Invalid email format");
+      return false;
+    }
+    return true;
+  };
+
+  const validateOtp = () => {
+    if (!formData.otp.trim()) {
+      toast.error("OTP is required");
+      return false;
+    }
+    return true;
+  };
+
+  const validateSignup = () => {
+    if (!formData.name.trim()) {
+      toast.error("Full name is required");
       return false;
     }
     if (!formData.password.trim()) {
@@ -41,42 +58,64 @@ const Signuppage = () => {
     return true;
   };
 
-  const handleOtpsend = async (e) => {
+  // Step 1: Send OTP
+  const handleSendOtp = async (e) => {
     e.preventDefault();
-    if (!validatedata()) return;
+    if (!validateEmail()) return;
 
+    setLoading(true);
     try {
       await sendOtp(formData.email);
       toast.success("OTP sent successfully!");
-    } catch (error) {
-      toast.error("Failed to send OTP. Please try again.");
+      setStep(2);
+    } catch (err) {
+      toast.error("Failed to send OTP");
     }
+    setLoading(false);
   };
 
-  const hanndleFormsubmit = async (e) => {
+  // Step 2: Verify OTP
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (!validatedata()) return;
+    if (!validateOtp()) return;
 
+    setLoading(true);
     try {
-
-      if (await verifyOtp(formData.email, formData.otp)) {
-        await signup(formData.email, formData.password, formData.name);
-        navigate('/');
+      const isValid = await verifyOtp(formData.email, formData.otp);
+      if (isValid) {
+        toast.success("OTP verified");
+        setStep(3);
       } else {
         toast.error("Invalid OTP");
       }
-    } catch (error) {
-      toast.error("Verification failed. Please try again.");
+    } catch (err) {
+      toast.error("OTP verification failed");
     }
+    setLoading(false);
   };
 
+  // Step 3: Signup
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    if (!validateSignup()) return;
+
+    setLoading(true);
+    try {
+      await signup(formData.email, formData.password, formData.name);
+      toast.success("Account created!");
+      navigate('/');
+    } catch (err) {
+      toast.error("Signup failed");
+    }
+    setLoading(false);
+  };
 
   return (
     <div className='min-h-screen grid lg:grid-cols-2'>
-      {/* Left side */}
+      {/* Left Section */}
       <div className="flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="w-full max-w-md space-y-8">
-          {/* Logo Section */}
+          {/* Header */}
           <div className="text-center mb-8">
             <div className="flex flex-col items-center gap-2 group">
               <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
@@ -87,124 +126,120 @@ const Signuppage = () => {
             </div>
           </div>
 
-          {/* Steps */}
-          <ul className="steps w-100">
-            <li className={!isSendOtp ? "step" : "step step-primary"}>Register</li>
-            <li className={!isSignup ? "step" : "step step-primary"}>Verify Otp</li>
+          {/* Step Indicators */}
+          <ul className="steps w-full">
+            <li className={step >= 1 ? "step step-primary" : "step"}>Send OTP</li>
+            <li className={step >= 2 ? "step step-primary" : "step"}>Verify OTP</li>
+            <li className={step === 3 ? "step step-primary" : "step"}>Signup</li>
           </ul>
 
-          {/* Signup Form */}
-          <form onSubmit={handleOtpsend} className={isSendOtp ? "hidden" : "block space-y-6"}>
-            {/* Name Field */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Full Name</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                  <User className="h-5 w-5" />
-                </span>
-                <input
-                  type="text"
-                  className="input input-bordered w-full pl-10"
-                  placeholder="John Doe"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-
-                />
+          {/* Step 1: Send OTP */}
+          {step === 1 && (
+            <form onSubmit={handleSendOtp} className="space-y-6">
+              <div className="form-control">
+                <label className="label"><span className="label-text font-medium">Email</span></label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <Mail className="h-5 w-5" />
+                  </span>
+                  <input
+                    type="email"
+                    className="input input-bordered w-full pl-10"
+                    placeholder="johndoe@gmail.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
               </div>
-            </div>
+              <button type="submit" className="btn btn-primary w-full">
+                {loading ? "Sending OTP..." : "Send OTP"}
+              </button>
+            </form>
+          )}
 
-            {/* Email Field */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Email</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                  <Mail className="h-5 w-5" />
-                </span>
+          {/* Step 2: Verify OTP */}
+          {step === 2 && (
+            <form onSubmit={handleVerifyOtp} className="space-y-6">
+              <div className="form-control">
+                <label className="label"><span className="label-text font-medium">OTP</span></label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <Lock className="h-5 w-5" />
+                  </span>
+                  <input
+                    type="text"
+                    className="input input-bordered w-full pl-10"
+                    placeholder="Enter OTP"
+                    value={formData.otp}
+                    onChange={(e) => setFormData({ ...formData, otp: e.target.value })}
+                  />
+                </div>
+              </div>
+              <button type="submit" className="btn btn-primary w-full">
+                {loading ? "Verifying OTP..." : "Verify OTP"}
+              </button>
+            </form>
+          )}
+
+          {/* Step 3: Signup */}
+          {step === 3 && (
+            <form onSubmit={handleSignup} className="space-y-6">
+              <div className="form-control">
+                <label className="label"><span className="label-text font-medium">Full Name</span></label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <User className="h-5 w-5" />
+                  </span>
+                  <input
+                    type="text"
+                    className="input input-bordered w-full pl-10"
+                    placeholder="John Doe"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-control">
+                <label className="label"><span className="label-text font-medium">Email</span></label>
                 <input
                   type="email"
-                  className="input input-bordered w-full pl-10"
-                  placeholder="johndoe@gmail.com"
+                  className="input input-bordered w-full"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-
+                  disabled
                 />
               </div>
-            </div>
 
-            {/* Password Field */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Password</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                  <Lock className="h-5 w-5" />
-                </span>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="input input-bordered w-full pl-10"
-                  placeholder="*******"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-
-
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
+              <div className="form-control">
+                <label className="label"><span className="label-text font-medium">Password</span></label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <Lock className="h-5 w-5" />
+                  </span>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="input input-bordered w-full pl-10"
+                    placeholder="*******"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              className="btn btn-primary w-full"
-              disabled={isSendOtp}
-            >
-              {isSendOtp ? "Sending OTP..." : "Send OTP"}
-            </button>
-          </form>
+              <button type="submit" className="btn btn-primary w-full">
+                {loading ? "Signing up..." : "Signup"}
+              </button>
+            </form>
+          )}
 
-          {/* OTP Verification Form */}
-          <form onSubmit={hanndleFormsubmit} className={isSendOtp ? "block space-y-6" : "hidden"}>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">OTP</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                  <Lock className="h-5 w-5" />
-                </span>
-                <input
-                  type="text"
-                  className="input input-bordered w-full pl-10"
-                  placeholder="Enter OTP"
-                  value={formData.otp}
-                  onChange={(e) => setFormData({ ...formData, otp: e.target.value })}
-
-                />
-              </div>
-            </div>
-            <button
-              type="submit"
-              className="btn btn-primary w-full"
-              disabled={isVerifyOtp}
-            >
-              {isVerifyOtp ? "Verify OTP..." : "Signup"}
-            </button>
-          </form>
-
+          {/* Footer */}
           <div className="text-center">
             <p className="text-base-content/60">
               Already have an account? <Link to="/login" className="link link-primary">Login</Link>
@@ -213,7 +248,7 @@ const Signuppage = () => {
         </div>
       </div>
 
-      {/* Right side */}
+      {/* Right Image */}
       <AuthImagePattern
         title="Join our community"
         subtitle="Connect with friends, share moments, and stay in touch with your loved ones."
