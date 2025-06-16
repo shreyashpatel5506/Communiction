@@ -7,6 +7,7 @@ export const useAuth = create((set) => ({
     isSignup:false,
     isLogin:false,
     isSendOtp:false,
+    isVerifyOtp:false,
     isUpdateProfile:false,
     isCheckAuth:true,
     checkAuth :async ()=>{
@@ -35,6 +36,9 @@ export const useAuth = create((set) => ({
         try {
             const res = await axiosInstance.post('/auth/verify-Otp',{email,otp});
             set({isSignup:true});
+            set({isVerifyOtp:true});
+            set({authuser:res.data.user});
+            set({isCheckAuth:false});
             return true;
         } catch (error) {
             console.log(error);

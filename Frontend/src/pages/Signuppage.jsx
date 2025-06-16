@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast';
 import AuthImagePattern from '../components/AuthImagePattern.jsx';
 
 const Signuppage = () => {
-  const { sendOtp, verifyOtp, signup, isSignup, isSendOtp } = useAuth();
+  const { sendOtp, verifyOtp, signup, isSignup, isSendOtp,isVerifyOtp } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -166,8 +166,12 @@ const Signuppage = () => {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary w-full">
-              Send OTP
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={isSendOtp}
+            >
+              {isSendOtp ? "Sending OTP..." : "Send OTP"}
             </button>
           </form>
 
@@ -191,8 +195,12 @@ const Signuppage = () => {
                 />
               </div>
             </div>
-            <button type="submit" className="btn btn-primary w-full">
-              Verify OTP
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={isVerifyOtp}
+            >
+              {isVerifyOtp ? "Verify OTP..." : "Signup"}
             </button>
           </form>
 
