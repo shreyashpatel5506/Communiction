@@ -15,6 +15,7 @@ const Loginpage = () => {
     password: "",
     otp: ""
   })
+
   const validatedata = () => {
     if (!formData.email.trim()) {
       toast.error("Email is required");

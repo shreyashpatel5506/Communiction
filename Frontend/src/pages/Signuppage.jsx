@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast';
 import AuthImagePattern from '../components/AuthImagePattern.jsx';
 
 const Signuppage = () => {
-  const { sendOtp, verifyOtp, signup, isSignup, isSendOtp,isVerifyOtp } = useAuth();
+  const { sendOtp, verifyOtp, signup, isSignup, isSendOtp, isVerifyOtp } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -44,7 +44,7 @@ const Signuppage = () => {
   const handleOtpsend = async (e) => {
     e.preventDefault();
     if (!validatedata()) return;
-    
+
     try {
       await sendOtp(formData.email);
       toast.success("OTP sent successfully!");
@@ -56,9 +56,9 @@ const Signuppage = () => {
   const hanndleFormsubmit = async (e) => {
     e.preventDefault();
     if (!validatedata()) return;
-    
+
     try {
-      
+
       if (await verifyOtp(formData.email, formData.otp)) {
         await signup(formData.email, formData.password, formData.name);
         navigate('/');
@@ -69,6 +69,7 @@ const Signuppage = () => {
       toast.error("Verification failed. Please try again.");
     }
   };
+
 
   return (
     <div className='min-h-screen grid lg:grid-cols-2'>
@@ -109,7 +110,7 @@ const Signuppage = () => {
                   placeholder="John Doe"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  
+
                 />
               </div>
             </div>
@@ -129,7 +130,7 @@ const Signuppage = () => {
                   placeholder="johndoe@gmail.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  
+
                 />
               </div>
             </div>
@@ -149,8 +150,8 @@ const Signuppage = () => {
                   placeholder="*******"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  
-                  
+
+
                 />
                 <button
                   type="button"
@@ -191,7 +192,7 @@ const Signuppage = () => {
                   placeholder="Enter OTP"
                   value={formData.otp}
                   onChange={(e) => setFormData({ ...formData, otp: e.target.value })}
-                  
+
                 />
               </div>
             </div>
