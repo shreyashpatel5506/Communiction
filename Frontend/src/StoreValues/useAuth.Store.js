@@ -78,7 +78,7 @@ export const useAuth = create((set) => ({
 
     forgotPassword: async (email) => {
         try {
-            const res = await axiosInstance.post('/auth/forgot-password', { email, newPassword });
+            const res = await axiosInstance.post('/auth/forgot-password', { email, password });
             return res.data.message;
         } catch (error) {
             console.log(error);

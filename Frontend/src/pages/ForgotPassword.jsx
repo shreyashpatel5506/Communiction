@@ -6,7 +6,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import AuthImagePattern from '../components/AuthImagePattern';
 
 const ForgotPassword = () => {
-    const { sendOtp, verifyOtp, resetPassword } = useAuth();
+    const { sendOtp, verifyOtp, forgotPassword } = useAuth();
     const navigate = useNavigate();
 
     const [step, setStep] = useState(1);
@@ -90,7 +90,7 @@ const ForgotPassword = () => {
         if (!validatePassword()) return;
         setLoading(true);
         try {
-            await resetPassword(formData.email, formData.newPassword);
+            await forgotPassword(formData.email, formData.newPassword);
             toast.success("Password reset successful");
             navigate('/login');
         } catch (err) {
