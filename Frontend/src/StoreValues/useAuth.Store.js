@@ -87,7 +87,7 @@ export const useAuth = create((set) => ({
 
     logout: async () => {
         try {
-            await axiosInstance.get('/auth/logout');
+            await axiosInstance.post('/auth/logout');
             set({ authuser: null });
             localStorage.removeItem('authuser');
             console.log("Logged out successfully");
@@ -95,5 +95,24 @@ export const useAuth = create((set) => ({
             console.log(error);
         }
     },
+
+    updateProfile: async (name, profilePicture) => {
+        try {
+
+            if (profilePicture) {
+                formData.append('profilePicture', profilePicture);
+            }
+            const res = await axiosInstance.post('/auth/update-profile', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            set({ authuser: res.data.user });
+            localStorage.setItem('authuser', JSON.stringify(res.data.user));
+            console.log("Profile updated successfully");
+        } catch (error) {
+            console.log(error);
+        }
+    }
 })
 );
