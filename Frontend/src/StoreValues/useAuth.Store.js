@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
-import { Await } from "react-router-dom";
 
 export const useAuth = create((set) => ({
     authuser: null,
@@ -76,14 +75,25 @@ export const useAuth = create((set) => ({
     }
     ,
 
-    forgotPassword: async (email) => {
+    forgotPassword: async (email, newPassword) => {
         try {
-            const res = await axiosInstance.post('/auth/forgot-password', { email, password });
+            const res = await axiosInstance.post('/auth/forgot-password', { email, newPassword });
             return res.data.message;
         } catch (error) {
             console.log(error);
             throw error;
         }
-    }
+    },
+
+    logout: async () => {
+        try {
+            await axiosInstance.get('/auth/logout');
+            set({ authuser: null });
+            localStorage.removeItem('authuser');
+            console.log("Logged out successfully");
+        } catch (error) {
+            console.log(error);
+        }
+    },
 })
 );
