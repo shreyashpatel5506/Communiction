@@ -1,8 +1,10 @@
+// ✅ ProfilePage.jsx
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../StoreValues/useAuth.Store';
 import { usePeoples } from '../StoreValues/peoples.store';
 import { Camera, Mail, User } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import avatar from '../assets/avatar-default-symbolic.svg'; // Default avatar image
 
 const ProfilePage = () => {
   const { authuser, updateProfile, isUpdateProfile } = useAuth();
@@ -32,40 +34,60 @@ const ProfilePage = () => {
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
-
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      setSelectedImg(base64Image);
-      await updateProfile({ profilePicture: base64Image, name: authuser.name });
-    };
+    reader.onload = () => setSelectedImg(reader.result);
+    toast.success('Image selected. Click "Update Profile" to save.');
   };
 
-  const handleUpdateName = async () => {
-    if (name !== authuser?.name) {
-      await updateProfile({ name, profilePicture: selectedImg || authuser.profilePicture });
+  const handleFullProfileUpdate = async () => {
+    if (!name && !selectedImg) return toast.error("Nothing to update");
+
+    try {
+      await updateProfile({
+        name: name !== authuser.name ? name : undefined,
+        profilePicture:
+          selectedImg && selectedImg.trim() !== authuser.profilePicture
+            ? selectedImg
+            : undefined,
+      });
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update profile");
+      console.error(error);
     }
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-center items-start p-4 gap-4">
-      {/* Profile Info Section */}
+    <div className="flex flex-col md:flex-row justify-center items-start px-4 pt-24 pb-4 gap-4 min-h-screen overflow-auto">
       <div className="w-full md:w-1/2 max-w-xl bg-base-300 rounded-xl p-6 space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-semibold">Profile</h1>
-          <p>Your profile information</p>
+          <p className="text-sm text-zinc-400">Your profile information</p>
         </div>
 
-        <div className="flex flex-col items-center gap-4 relative">
+        <div
+          onDrop={(e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith("image/")) {
+              const reader = new FileReader();
+              reader.readAsDataURL(file);
+              reader.onload = () => setSelectedImg(reader.result);
+              toast.success("Image dropped. Click 'Update Profile' to save.");
+            }
+          }}
+          onDragOver={(e) => e.preventDefault()}
+          className="relative w-32 h-32 rounded-full border-4 overflow-hidden mx-auto shadow-md"
+        >
           <img
-            src={selectedImg || authuser.profilePicture || '/avatar.png'}
+            src={selectedImg || authuser.profilePicture || avatar}
             alt="Profile"
-            className="w-32 h-32 rounded-full object-cover border-4"
+            className="object-cover w-full h-full"
           />
           <label
             htmlFor="avatar-upload"
-            className={`absolute bottom-0 right-1/3 bg-base-content hover:scale-105 p-2 rounded-full cursor-pointer transition-all duration-200 ${isUpdateProfile ? 'animate-pulse pointer-events-none' : ''}`}
+            className={`absolute -bottom-3 -right-3 bg-white hover:scale-105 p-2 rounded-full cursor-pointer transition-all duration-200 border-2 border-white shadow-xl ${isUpdateProfile ? 'animate-pulse pointer-events-none' : ''}`}
           >
-            <Camera className="w-5 h-5 text-base-200" />
+            <Camera className="w-5 h-5 text-black z-10" />
             <input
               type="file"
               id="avatar-upload"
@@ -76,9 +98,6 @@ const ProfilePage = () => {
             />
           </label>
         </div>
-        <p className="text-sm text-zinc-400 text-center">
-          {isUpdateProfile ? 'Uploading...' : 'Click the camera icon to update your photo'}
-        </p>
 
         <div className="space-y-4">
           <div>
@@ -89,8 +108,8 @@ const ProfilePage = () => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              onBlur={handleUpdateName}
               className="px-4 py-2.5 bg-base-200 rounded-lg border w-full"
+              disabled={isUpdateProfile}
             />
           </div>
 
@@ -102,22 +121,17 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        <div className="mt-6 bg-base-200 rounded-xl p-4">
-          <h2 className="text-lg font-medium mb-4">Account Information</h2>
-          <div className="text-sm space-y-2">
-            <div className="flex justify-between border-b py-2">
-              <span>Member Since</span>
-              <span>{authuser.createdAt?.split('T')[0]}</span>
-            </div>
-            <div className="flex justify-between py-2">
-              <span>Account Status</span>
-              <span className="text-green-500">Active</span>
-            </div>
-          </div>
+        <div className="text-center">
+          <button
+            onClick={handleFullProfileUpdate}
+            disabled={isUpdateProfile}
+            className="btn btn-primary mt-4"
+          >
+            {isUpdateProfile ? 'Updating...' : 'Update Profile'}
+          </button>
         </div>
       </div>
 
-      {/* Requests Section */}
       <div className="w-full md:w-1/2 max-w-xl bg-base-300 rounded-xl p-6 space-y-6">
         <h2 className="text-2xl font-semibold text-center">Followers & Requests</h2>
 
@@ -127,13 +141,13 @@ const ProfilePage = () => {
             {Array.isArray(followers) && followers.map((follower) => (
               <div key={follower._id} className="bg-base-200 p-3 rounded-lg flex items-center gap-3">
                 <img
-                  src={follower.profilePicture || '/avatar.png'}
+                  src={follower.profilePicture || avatar}
                   alt={follower.name}
                   className="w-10 h-10 rounded-full object-cover"
                 />
                 <div>
-                  <h4 className="font-medium">{follower.name}</h4>
-                  <p className="text-xs text-zinc-400">{follower.email}</p>
+                  <h4 className="font-medium text-sm">{follower.name}</h4>
+                  <p className="text-xs text-zinc-400 truncate max-w-[160px]">{follower.email}</p>
                 </div>
               </div>
             ))}

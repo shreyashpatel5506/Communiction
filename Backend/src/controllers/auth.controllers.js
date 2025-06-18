@@ -79,6 +79,7 @@ export const verifyOTP = (req, res) => {
 export const signup = async (req, res) => {
   try {
     const { email, password, name } = req.body;
+    const { profilePicture } = "req.files" || {};
 
     const record = otpStorage.get(email);
     if (!record || !record.verified) {
@@ -115,6 +116,7 @@ export const signup = async (req, res) => {
         email: newUser.email,
         name: newUser.name,
         createdAt: newUser.createdAt,
+        profilePicture: newUser.profilePicture,
       },
     });
   } catch (err) {
@@ -122,6 +124,7 @@ export const signup = async (req, res) => {
   }
 };
 
+// ✅ Login
 // ✅ Login
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -144,12 +147,15 @@ export const login = async (req, res) => {
         email: user.email,
         name: user.name,
         createdAt: user.createdAt,
+        profilePicture: user.profilePicture,
+        // Add any other fields you want to include
       },
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
+
 
 // ✅ Logout
 export const logout = async (req, res) => {
@@ -167,16 +173,23 @@ export const updateprofile = async (req, res) => {
     const userId = req.user._id;
     const { name, profilePicture } = req.body;
 
-    if (!name || !profilePicture) {
-      return res.status(400).json({ message: "Missing required fields" });
+    const updatedFields = {};
+    if (name) updatedFields.name = name;
+
+    if (profilePicture && profilePicture.trim() !== '') {
+      try {
+        const pic = await cloudinary.uploader.upload(profilePicture);
+        updatedFields.profilePicture = pic.secure_url;
+      } catch (uploadError) {
+        return res.status(400).json({ message: "Invalid profile picture format" });
+      }
     }
 
-    const pic = await cloudinary.uploader.upload(profilePicture);
-    const user = await usermodel.findByIdAndUpdate(
-      userId,
-      { name, profilePicture: pic.secure_url },
-      { new: true }
-    );
+    if (Object.keys(updatedFields).length === 0) {
+      return res.status(400).json({ message: "Nothing to update" });
+    }
+
+    const user = await usermodel.findByIdAndUpdate(userId, updatedFields, { new: true });
 
     return res.status(200).json({
       message: "Profile updated",
@@ -187,6 +200,8 @@ export const updateprofile = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+
 
 // ✅ Check Auth
 export const checkauth = async (req, res) => {

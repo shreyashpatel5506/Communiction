@@ -11,9 +11,11 @@ import { useAuth } from './StoreValues/useAuth.Store.js';
 import { Loader } from "lucide-react"
 import { Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { useThemeStore } from './StoreValues/useTheme.Store.js';
 
 const App = () => {
   const { authuser, checkAuth, isCheckAuth } = useAuth();
+  const { theme } = useThemeStore()
   useEffect(() => {
     checkAuth();
     console.log("Auth user:", authuser);
@@ -25,7 +27,7 @@ const App = () => {
     </div>)
   }
   return (
-    <div>
+    <div className="min-h-screen bg-base-100" data-theme={theme}>
       <Navbar />
 
       <Routes>
@@ -39,7 +41,8 @@ const App = () => {
 
       <Toaster position="top-right" />
     </div>
-  )
+  );
+
 }
 
 export default App

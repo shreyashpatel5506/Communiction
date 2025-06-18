@@ -95,24 +95,32 @@ export const useAuth = create((set) => ({
             console.log(error);
         }
     },
-
-    updateProfile: async (name, profilePicture) => {
+    // ✅ Store function
+    updateProfile: async ({ name, profilePicture }) => {
         try {
+            const payload = {};
+            if (name) payload.name = name;
+            if (profilePicture && profilePicture.trim() !== '') payload.profilePicture = profilePicture;
 
-            if (profilePicture) {
-                formData.append('profilePicture', profilePicture);
+            if (Object.keys(payload).length === 0) {
+                console.log("Nothing to update");
+                return;
             }
-            const res = await axiosInstance.post('/auth/update-profile', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            set({ authuser: res.data.user });
-            localStorage.setItem('authuser', JSON.stringify(res.data.user));
-            console.log("Profile updated successfully");
+
+            await axiosInstance.put('/auth/update-profile', payload);
+
+            // Refresh authuser from server
+            const check = await axiosInstance.get('/auth/check');
+            const freshUser = check.data.user;
+            set({ authuser: freshUser });
+            localStorage.setItem('authuser', JSON.stringify(freshUser));
+            console.log("Profile updated and user refreshed");
         } catch (error) {
             console.log(error);
         }
     }
+
+
+
 })
 );

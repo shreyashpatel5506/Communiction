@@ -17,7 +17,8 @@ const __dirname = path.resolve();
 const app = express();
 
 // ✅ Middleware to parse incoming JSON
-app.use(express.json());
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
 
 // ✅ Debug middleware to log all requests
 app.use((req, res, next) => {

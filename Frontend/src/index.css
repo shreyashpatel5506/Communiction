@@ -1,4 +1,16 @@
 @import "tailwindcss";
+
 @plugin "daisyui" {
   themes: all;
+}
+
+/* index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  @apply h-full bg-base-100;
 }

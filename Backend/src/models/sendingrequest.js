@@ -6,7 +6,7 @@ const mongooseSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
-    SendingRequestIds: [{
+    sendingRequestIds: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,

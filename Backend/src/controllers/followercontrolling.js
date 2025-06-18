@@ -13,11 +13,11 @@ export const sendingfollowingrequest = async (req, res) => {
         }
         const sendingRequest = new SendingRequest({
             userId: userId,
-            SendingRequestIds: [usersendrequestId],
+            sendingRequestIds: [usersendrequestId],
         });
         const pendingRequest = new PendingRequest({
             userId: usersendrequestId,
-            PendingRequestIds: [userId],
+            pendingRequestIds: [userId],
         })
         if (sendingRequest) {
             await sendingRequest.save();
@@ -43,24 +43,29 @@ export const acceptrequest = async (req, res) => {
     if (!pendingRequest) {
         return res.status(400).json({ message: "Pending request does not exist" });
     }
-    const isAlreadyAccepted = pendingRequest.PendingRequestIds.find(id => id.toString() === userId);
+    const isAlreadyAccepted = pendingRequest.pendingRequestIds.find(id => id.toString() === userId);
     if (isAlreadyAccepted) {
         return res.status(400).json({ message: "Request already accepted" });
     }
-    // Remove acceptrequestId from PendingRequestIds
-    pendingRequest.PendingRequestIds = pendingRequest.PendingRequestIds.filter(id => id.toString() !== userId);
+    // Remove acceptrequestId from pendingRequestIds
+    pendingRequest.pendingRequestIds = pendingRequest.pendingRequestIds.filter(id => id.toString() !== userId);
 
-    // Remove userId from SendingRequest.SendingRequestIds of the user who sent the request
+    // Remove userId from SendingRequest.sendingRequestIds of the user who sent the request
     const sendingRequest = await SendingRequest.findOne({ userId: userId });
     if (sendingRequest) {
-        sendingRequest.SendingRequestIds = sendingRequest.SendingRequestIds.filter(id => id.toString() !== acceptrequestId);
+        sendingRequest.sendingRequestIds = sendingRequest.sendingRequestIds.filter(id => id.toString() !== acceptrequestId);
         await sendingRequest.save();
     }
     await pendingRequest.save();
     const follower = new Follower({
         userId: userId,
         followingIds: [acceptrequestId],
-    });
+    }, {
+        userId: acceptrequestId,
+        followingIds: [userId],
+    }
+    );
+
     await follower.save();
     res.status(200).json({
         message: "Request accepted",
@@ -81,12 +86,12 @@ export const rejectrequest = async (req, res) => {
         if (!pendingRequest) {
             return res.status(400).json({ message: "Pending request does not exist" });
         }
-        const isAlreadyRejected = pendingRequest.PendingRequestIds.find(id => id.toString() === userId);
+        const isAlreadyRejected = pendingRequest.pendingRequestIds.find(id => id.toString() === userId);
         if (isAlreadyRejected) {
             return res.status(400).json({ message: "Request already rejected" });
         }
-        // Remove rejectrequestId from PendingRequestIds
-        pendingRequest.PendingRequestIds = pendingRequest.PendingRequestIds.filter(id => id.toString() !== userId);
+        // Remove rejectrequestId from pendingRequestIds
+        pendingRequest.pendingRequestIds = pendingRequest.pendingRequestIds.filter(id => id.toString() !== userId);
         await pendingRequest.save();
         res.status(200).json({
             message: "Request rejected",
@@ -129,7 +134,7 @@ export const getpendingrequestusers = async (req, res) => {
 
     try {
         const userId = req.user._id;
-        const pendingRequest = await PendingRequest.findOne({ userId }).populate('PendingRequestIds');
+        const pendingRequest = await PendingRequest.findOne({ userId }).populate('pendingRequestIds');
         res.status(200).json({
             message: "Pending request users fetched",
             success: true,
@@ -143,7 +148,7 @@ export const getpendingrequestusers = async (req, res) => {
 export const getsendingrequestuser = async (req, res) => {
     try {
         const userId = req.user._id;
-        const sendingRequest = await SendingRequest.findOne({ userId }).populate('SendingRequestIds');
+        const sendingRequest = await SendingRequest.findOne({ userId }).populate('sendingRequestIds');
         res.status(200).json({
             message: "Sending request users fetched",
             success: true,

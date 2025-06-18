@@ -37,9 +37,9 @@ export const usePeoples = create((set) => ({
         try {
             set({ isLoadingPendingRequest: true });
             const res = await axiosInstance.get('/follower/get-pendingrequestuser');
-            const pendingRequest = res.data.pendingrequest;
+            const pendingRequest = res.data.pendingrequest.pendingRequestIds;
             set({ pendingrequestUsers: pendingRequest });
-            console.log("Pending Request:", pendingrequestUsers);
+            console.log("Pending Request:", pendingRequest);
         } catch (error) {
             console.log(error);
         } finally {
@@ -51,8 +51,9 @@ export const usePeoples = create((set) => ({
             set({ isLoadingSendingRequest: true });
             const res = await axiosInstance.get('/follower/get-sendingrequestuser');
 
-            set({ sendingRequestUsers: res.data.sendingrequest });
-            console.log("Sending Request:", sendingRequestUsers);
+            set({ sendingRequestUsers: res.data.sendingrequest.sendingRequestIds });
+            const data = res.data.sendingrequest.sendingRequestIds;
+            console.log("Sending Request:", data);
         } catch (error) {
             console.log(error);
         } finally {
