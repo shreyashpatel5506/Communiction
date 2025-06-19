@@ -50,9 +50,9 @@ const ProfilePage = () => {
             ? selectedImg
             : undefined,
       });
-      toast.success("Profile updated successfully!");
+
     } catch (error) {
-      toast.error("Failed to update profile");
+
       console.error(error);
     }
   };
@@ -174,7 +174,6 @@ const ProfilePage = () => {
                   <button
                     onClick={() => {
                       acceptFollowRequest(request._id);
-                      toast.success("Follow request accepted");
                       fetchPendingRequest();
                       Navigate("/profile");
                       // Refresh pending requests
@@ -186,7 +185,6 @@ const ProfilePage = () => {
                   <button
                     onClick={() => {
                       rejectFollowRequest(request._id);
-                      toast.success("Follow request rejected");
                       fetchPendingRequest(); // Refresh pending requests
                       Navigate("/profile");
                     }}

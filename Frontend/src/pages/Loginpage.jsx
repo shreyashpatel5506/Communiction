@@ -58,10 +58,10 @@ const Loginpage = () => {
     setLoading(true);
     try {
       await sendOtp(formData.email);
-      toast.success("OTP sent successfully!");
+
       setStep(2);
     } catch (error) {
-      toast.error("Failed to send OTP. Please try again.");
+      console.log(error);
     }
     setLoading(false);
   };
@@ -75,13 +75,13 @@ const Loginpage = () => {
     try {
       const isValid = await verifyOtp(formData.email, formData.otp);
       if (isValid) {
-        toast.success("OTP verified");
+
         setStep(3);
       } else {
         toast.error("Invalid OTP");
       }
     } catch (error) {
-      toast.error("OTP verification failed");
+      console.log(error);
     }
     setLoading(false);
   };
@@ -94,10 +94,10 @@ const Loginpage = () => {
     setLoading(true);
     try {
       await login(formData.email, formData.password);
-      toast.success("Login successful!");
+
       navigate('/');
     } catch (error) {
-      toast.error("Login failed. Please check credentials.");
+      console.log(error);
     }
     setLoading(false);
   };

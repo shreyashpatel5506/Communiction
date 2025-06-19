@@ -66,10 +66,10 @@ const Signuppage = () => {
     setLoading(true);
     try {
       await sendOtp(formData.email);
-      toast.success("OTP sent successfully!");
+
       setStep(2);
     } catch (err) {
-      toast.error("Failed to send OTP");
+      console.log(error)
     }
     setLoading(false);
   };
@@ -83,13 +83,13 @@ const Signuppage = () => {
     try {
       const isValid = await verifyOtp(formData.email, formData.otp);
       if (isValid) {
-        toast.success("OTP verified");
+
         setStep(3);
       } else {
         toast.error("Invalid OTP");
       }
     } catch (err) {
-      toast.error("OTP verification failed");
+      console.log(err)
     }
     setLoading(false);
   };
@@ -102,10 +102,10 @@ const Signuppage = () => {
     setLoading(true);
     try {
       await signup(formData.email, formData.password, formData.name);
-      toast.success("Account created!");
+
       navigate('/');
     } catch (err) {
-      toast.error("Signup failed");
+      console.log(err)
     }
     setLoading(false);
   };

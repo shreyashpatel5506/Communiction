@@ -88,6 +88,18 @@ export const usePeoples = create((set) => ({
     sendFollowRequest: async (reciverId) => {
         try {
             const res = await axiosInstance.post('/follower/send-request', { usersendrequestId: reciverId });
+            if (res.status === 200) {
+                usePeoples.getState().fetchSendingRequest();
+                toast.success(
+                    "Request sent successfully"
+                )
+
+            }
+            else {
+                toast.error(
+                    "Request already sent or try again"
+                )
+            }
             console.log(res.data.message);
         } catch (error) {
             console.log(error);
@@ -96,6 +108,17 @@ export const usePeoples = create((set) => ({
     acceptFollowRequest: async (userId) => {
         try {
             const res = await axiosInstance.post('/follower/accept-request', { acceptrequestId: userId });
+            if (res.status === 200) {
+                usePeoples.getState().fetchPendingRequest();
+                toast.success(
+                    "Request accepted successfully"
+                )
+            }
+            else {
+                toast.error(
+                    "Request already accepted or try again"
+                )
+            }
             console.log(res.data.message);
         } catch (error) {
             console.log(error);
@@ -104,6 +127,17 @@ export const usePeoples = create((set) => ({
     rejectFollowRequest: async (userId) => {
         try {
             const res = await axiosInstance.post('/follower/reject-request', { rejectrequestId: userId });
+            if (res.status === 200) {
+                usePeoples.getState().fetchPendingRequest();
+                toast.success(
+                    "Request rejected successfully"
+                )
+            }
+            else {
+                toast.error(
+                    "Request already rejected or try again"
+                )
+            }
             console.log(res.data.message);
         } catch (error) {
             console.log(error);

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
+import toast from "react-hot-toast";
 
 export const useAuth = create((set) => ({
     authuser: null,
@@ -29,6 +30,11 @@ export const useAuth = create((set) => ({
         try {
             const res = await axiosInstance.post('/auth/send-Otp', { email });
             set({ isSendOtp: true });
+            if (res.status === 200) {
+                return toast.success('Otp sent successfully');
+            } else {
+                return toast.error('Otp not sent,check your email,enter correct email');
+            }
             set({ isSignup: true });
         } catch (error) {
             console.log(error);
@@ -40,6 +46,11 @@ export const useAuth = create((set) => ({
             const res = await axiosInstance.post('/auth/verify-Otp', { email, otp });
             set({ isSignup: true });
             set({ isVerifyOtp: true });
+            if (res.status === 200) {
+                return toast.success('Otp verified successfully');
+            } else {
+                return toast.error('Otp not verified,please try again with correct otp');
+            }
             set({ authuser: res.data.user });
             set({ isCheckAuth: false });
             return true;
@@ -52,6 +63,11 @@ export const useAuth = create((set) => ({
     signup: async (email, password, name) => {
         try {
             const res = await axiosInstance.post('/auth/signup', { email, password, name });
+            if (res.status === 200) {
+                return toast.success('Signup successfully');
+            } else {
+                return toast.error('Signup not successfully,please try again with correct email');
+            }
             const authuser = res.data.user;
             set({ authuser });
             localStorage.setItem('authuser', JSON.stringify(authuser));
@@ -65,6 +81,11 @@ export const useAuth = create((set) => ({
     login: async (email, password) => {
         try {
             const res = await axiosInstance.post('/auth/login', { email, password });
+            if (res.status === 200) {
+                return toast.success('Login successfully');
+            } else {
+                return toast.error('Login not successfully,please try again with correct email and password');
+            }
             const authuser = res.data.user;
             set({ authuser });
             localStorage.setItem('authuser', JSON.stringify(authuser));
@@ -78,6 +99,11 @@ export const useAuth = create((set) => ({
     forgotPassword: async (email, newPassword) => {
         try {
             const res = await axiosInstance.post('/auth/forgot-password', { email, newPassword });
+            if (res.status === 200) {
+                return toast.success('Password changed successfully');
+            } else {
+                return toast.error('Password not changed,please try again with correct email');
+            }
             return res.data.message;
         } catch (error) {
             console.log(error);
@@ -108,6 +134,12 @@ export const useAuth = create((set) => ({
             }
 
             await axiosInstance.put('/auth/update-profile', payload);
+            if (payload.name) {
+                toast.success('Name updated successfully');
+            }
+            if (payload.profilePicture) {
+                toast.success('Profile picture updated successfully');
+            }
 
             // Refresh authuser from server
             const check = await axiosInstance.get('/auth/check');

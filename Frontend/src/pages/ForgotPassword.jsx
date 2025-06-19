@@ -57,10 +57,10 @@ const ForgotPassword = () => {
         setLoading(true);
         try {
             await sendOtp(formData.email);
-            toast.success("OTP sent to email");
+
             setStep(2);
         } catch (err) {
-            toast.error("Failed to send OTP");
+            console.error(err);
         }
         setLoading(false);
     };
@@ -73,13 +73,13 @@ const ForgotPassword = () => {
         try {
             const isValid = await verifyOtp(formData.email, formData.otp);
             if (isValid) {
-                toast.success("OTP verified");
+
                 setStep(3);
             } else {
                 toast.error("Invalid OTP");
             }
         } catch (err) {
-            toast.error("OTP verification failed");
+            console.log(err);
         }
         setLoading(false);
     };
@@ -91,10 +91,10 @@ const ForgotPassword = () => {
         setLoading(true);
         try {
             await forgotPassword(formData.email, formData.newPassword);
-            toast.success("Password reset successful");
+
             navigate('/login');
         } catch (err) {
-            toast.error("Failed to reset password");
+            console.log(err);
         }
         setLoading(false);
     };
