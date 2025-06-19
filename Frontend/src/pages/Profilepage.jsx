@@ -5,6 +5,7 @@ import { usePeoples } from '../StoreValues/peoples.store';
 import { Camera, Mail, User } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import avatar from '../assets/avatar-default-symbolic.svg'; // Default avatar image
+import { Navigate } from 'react-router-dom';
 
 const ProfilePage = () => {
   const { authuser, updateProfile, isUpdateProfile } = useAuth();
@@ -159,16 +160,36 @@ const ProfilePage = () => {
           <div className="space-y-2">
             {Array.isArray(pendingrequestUsers) && pendingrequestUsers.map((request) => (
               <div key={request._id} className="flex items-center justify-between">
-                <span>{request.name}</span>
+                <div className="flex items-center gap-3">
+                  <img
+                    src={request.profilePicture || avatar}
+                    alt={request.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <span className="font-medium">{request.name}</span>
+                  <span className="text-sm text-zinc-400">{request.email}</span>
+                </div>
+
                 <div className="flex gap-2">
                   <button
-                    onClick={() => acceptFollowRequest(request._id)}
+                    onClick={() => {
+                      acceptFollowRequest(request._id);
+                      toast.success("Follow request accepted");
+                      fetchPendingRequest();
+                      Navigate("/profile");
+                      // Refresh pending requests
+                    }}
                     className="px-3 py-1 text-white bg-green-600 rounded-lg text-sm"
                   >
                     Accept
                   </button>
                   <button
-                    onClick={() => rejectFollowRequest(request._id)}
+                    onClick={() => {
+                      rejectFollowRequest(request._id);
+                      toast.success("Follow request rejected");
+                      fetchPendingRequest(); // Refresh pending requests
+                      Navigate("/profile");
+                    }}
                     className="px-3 py-1 text-white bg-red-600 rounded-lg text-sm"
                   >
                     Reject
@@ -184,8 +205,16 @@ const ProfilePage = () => {
           <div className="space-y-2">
             {Array.isArray(sendingRequestUsers) && sendingRequestUsers.map((request) => (
               <div key={request._id} className="flex items-center justify-between">
-                <span>{request.name}</span>
-                <span className="text-sm text-zinc-400">Request sent</span>
+                <div className="flex items-center gap-3">
+                  <img
+                    src={request.profilePicture || avatar}
+                    alt={request.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <span className="font-medium">{request.name}</span>
+                  <span className="text-sm text-zinc-400">{request.email}</span>
+                </div>
+
               </div>
             ))}
           </div>

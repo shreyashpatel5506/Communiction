@@ -1,4 +1,6 @@
 import Follower from "../models/follwer.user.model.js";
+import PendingRequest from "../models/pendingrequest.js";
+import SendingRequest from "../models/sendingrequest.js";
 import Message from "../models/message.model.js";
 import user from "../models/user.model.js";
 import claudinary from "../lib/cloudinary.js";
@@ -19,17 +21,33 @@ export const fetchfollowersuser = async (req, res) => {
 };
 
 // Fetch all users except the current one, with optional search
+// ✅ Update fetchalluser in your controller
 export const fetchalluser = async (req, res) => {
   try {
     const userId = req.user._id;
-    const search = req.query.search; // ✅ correctly extract string
+    const search = req.query.search;
 
-    const query = { _id: { $ne: userId } };
+    // Get all exclusion lists
+    const [followers, pendingRequest, sendingRequest] = await Promise.all([
+      Follower.findOne({ userId }),
+      PendingRequest.findOne({ userId }),
+      SendingRequest.findOne({ userId }),
+    ]);
+
+    const excludedIds = new Set();
+
+    if (followers) followers.followingIds.forEach(id => excludedIds.add(id.toString()));
+    if (pendingRequest) pendingRequest.pendingRequestIds.forEach(id => excludedIds.add(id.toString()));
+    if (sendingRequest) sendingRequest.sendingRequestIds.forEach(id => excludedIds.add(id.toString()));
+
+    excludedIds.add(userId.toString()); // Don't show current user
+
+    const query = { _id: { $nin: Array.from(excludedIds) } };
 
     if (search) {
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
       ];
     }
 
@@ -43,6 +61,7 @@ export const fetchalluser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Send a message (with optional image)
 export const sendmessage = async (req, res) => {
