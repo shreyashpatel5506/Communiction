@@ -1,8 +1,8 @@
 import { create } from 'zustand'
-import axiosInstance from '../api/axiosInstance'
+import { axiosInstance } from "../lib/axios";
 import toast from 'react-hot-toast'
 
-const useChatStore = create((set) => ({
+export const useChatStore = create((set) => ({
     messages: [],
     user: [],
     isUserLoading: false,
