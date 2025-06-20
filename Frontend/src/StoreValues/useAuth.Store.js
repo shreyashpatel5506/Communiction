@@ -29,17 +29,33 @@ export const useAuth = create((set) => ({
     sendOtp: async (email) => {
         try {
             const res = await axiosInstance.post('/auth/send-Otp', { email });
-            set({ isSendOtp: true });
             if (res.status === 200) {
-                return toast.success('Otp sent successfully');
+                toast.success('OTP sent successfully');
+                set({ isSendOtp: true });
+                return true;
+            } else if (res.status === 452) {
+                toast.error('This email cannot receive OTPs (invalid or undeliverable)');
+                return false;
+            } else if (res.status === 422) {
+                toast.error('Invalid email format');
+                return false;
             } else {
-                return toast.error('Otp not sent,check your email,enter correct email');
+                toast.error('Something went wrong while sending OTP');
+                return false;
             }
-            set({ isSignup: true });
         } catch (error) {
-            console.log(error);
+            if (error.response?.status === 452) {
+                toast.error('Email domain is invalid or unreachable');
+            } else if (error.response?.status === 502) {
+                toast.error('SMTP server failed to send email');
+            } else {
+                toast.error('Unexpected error occurred');
+            }
+            console.error("OTP Send Error:", error);
+            return false;
         }
     },
+
 
     verifyOtp: async (email, otp) => {
         try {
@@ -51,9 +67,7 @@ export const useAuth = create((set) => ({
             } else {
                 return toast.error('Otp not verified,please try again with correct otp');
             }
-            set({ authuser: res.data.user });
-            set({ isCheckAuth: false });
-            return true;
+
         } catch (error) {
             console.log(error);
             return false;
@@ -64,15 +78,15 @@ export const useAuth = create((set) => ({
         try {
             const res = await axiosInstance.post('/auth/signup', { email, password, name });
             if (res.status === 200) {
+                set({ authuser });
+                localStorage.setItem('authuser', JSON.stringify(authuser));
+                console.log("Auth user:", localStorage.getItem('authuser'));
+                set({ isSignup: true });
                 return toast.success('Signup successfully');
             } else {
                 return toast.error('Signup not successfully,please try again with correct email');
             }
             const authuser = res.data.user;
-            set({ authuser });
-            localStorage.setItem('authuser', JSON.stringify(authuser));
-            console.log("Auth user:", localStorage.getItem('authuser'));
-            set({ isSignup: true });
         } catch (error) {
             console.log(error);
         }
@@ -82,14 +96,14 @@ export const useAuth = create((set) => ({
         try {
             const res = await axiosInstance.post('/auth/login', { email, password });
             if (res.status === 200) {
+                const authuser = res.data.user;
+                set({ authuser });
+                localStorage.setItem('authuser', JSON.stringify(authuser));
+                console.log("Auth user:", localStorage.getItem('authuser'));
                 return toast.success('Login successfully');
             } else {
                 return toast.error('Login not successfully,please try again with correct email and password');
             }
-            const authuser = res.data.user;
-            set({ authuser });
-            localStorage.setItem('authuser', JSON.stringify(authuser));
-            console.log("Auth user:", localStorage.getItem('authuser'));
         } catch (error) {
             console.log(error);
         }

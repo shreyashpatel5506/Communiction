@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import usermodel from "./../models/user.model.js";
 import cloudinary from "../lib/cloudinary.js";
+import dns from "dns/promises";
 
 // Store OTP and verification status
 const otpStorage = new Map();
@@ -34,12 +35,28 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// ✅ Send OTP
+
 export const sendOtp = async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
     return res.status(400).json({ message: "Email is required", success: false });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(422).json({ message: "Invalid email format", success: false });
+  }
+
+  const domain = email.split("@")[1];
+  try {
+    const mxRecords = await dns.resolveMx(domain);
+    if (!mxRecords || mxRecords.length === 0) {
+      return res.status(452).json({ message: "Email domain does not accept mail", success: false });
+    }
+  } catch (dnsError) {
+    console.error("DNS lookup failed:", dnsError);
+    return res.status(452).json({ message: "Invalid or unreachable email domain", success: false });
   }
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -52,15 +69,23 @@ export const sendOtp = async (req, res) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    otpStorage.set(email, { otp, verified: false });
-    console.log("OTP sent to", email, ":", otp);
-    return res.status(200).json({ message: "OTP sent", success: true });
+    const info = await transporter.sendMail(mailOptions);
+
+    if (info.accepted && info.accepted.includes(email)) {
+      otpStorage.set(email, { otp, verified: false });
+      console.log("OTP sent to", email, ":", otp);
+      return res.status(200).json({ message: "OTP sent", success: true });
+    } else {
+      console.error("SMTP rejected the email:", info);
+      return res.status(452).json({ message: "SMTP did not accept the email", success: false });
+    }
+
   } catch (error) {
-    console.error("Failed to send OTP:", error);
-    return res.status(500).json({ message: "Failed to send OTP", success: false });
+    console.error("Failed to send mail:", error);
+    return res.status(502).json({ message: "Failed to send email", success: false });
   }
 };
+
 
 // ✅ Verify OTP
 export const verifyOTP = (req, res) => {

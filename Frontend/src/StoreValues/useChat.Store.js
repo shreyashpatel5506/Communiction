@@ -9,13 +9,25 @@ const useChatStore = create((set) => ({
     selectedUser: null,
     isMessagesLoading: false,
 
-    getFollowedUser: (async) => {
+    getFollowedUser: async () => {
         try {
+            const res = await axiosInstance.get('/message/follwers');
+            set({ user: response.data })
 
         } catch (error) {
             toast.error(error.response.data.message)
         } finally {
             set({ isUserLoading: false })
+        }
+    },
+    getMessages: async (userId) => {
+        try {
+            const res = await axiosInstance.get('/message/get-message/{user.id}');
+            set({ messages: response.data })
+        } catch (error) {
+            toast.error(error.response.data.message)
+        } finally {
+            set({ isMessagesLoading: false })
         }
     }
 }));

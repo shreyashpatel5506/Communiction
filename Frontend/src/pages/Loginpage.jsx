@@ -57,9 +57,10 @@ const Loginpage = () => {
 
     setLoading(true);
     try {
-      await sendOtp(formData.email);
-
-      setStep(2);
+      const success = await sendOtp(formData.email);
+      if (success) {
+        setStep(2);
+      }
     } catch (error) {
       console.log(error);
     }

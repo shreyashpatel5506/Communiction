@@ -54,13 +54,15 @@ const ForgotPassword = () => {
     const handleSendOtp = async (e) => {
         e.preventDefault();
         if (!validateEmail()) return;
+
         setLoading(true);
         try {
-            await sendOtp(formData.email);
-
-            setStep(2);
-        } catch (err) {
-            console.error(err);
+            const success = await sendOtp(formData.email);
+            if (success) {
+                setStep(2);
+            }
+        } catch (error) {
+            console.log(error);
         }
         setLoading(false);
     };

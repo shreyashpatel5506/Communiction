@@ -65,15 +65,15 @@ const Signuppage = () => {
 
     setLoading(true);
     try {
-      await sendOtp(formData.email);
-
-      setStep(2);
-    } catch (err) {
-      console.log(error)
+      const success = await sendOtp(formData.email);
+      if (success) {
+        setStep(2);
+      }
+    } catch (error) {
+      console.log(error);
     }
     setLoading(false);
   };
-
   // Step 2: Verify OTP
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
