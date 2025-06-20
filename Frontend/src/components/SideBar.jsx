@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useChatStore } from '../StoreValues/useChat.Store'
-import { SidebarSkeleton } from "./skelton/SidebarSkeleton.jsx"
+import SidebarSkeleton from "./skelton/SidebarSkelton.jsx"
 
 const SideBar = () => {
     const { getFollowedUser, users, selectedUser, isUserLoading } = useChatStore();
