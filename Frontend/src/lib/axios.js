@@ -1,3 +1,4 @@
+// lib/axios.js
 import axios from 'axios';
 
 export const axiosInstance = axios.create({
@@ -5,5 +6,5 @@ export const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
+  withCredentials: true, // 🔥 required for cookie-based auth
 });

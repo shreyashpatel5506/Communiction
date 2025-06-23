@@ -237,10 +237,12 @@ export const checkauth = async (req, res) => {
       success: true,
       user,
     });
+    console.log(req.cookies)
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
+
 
 // ✅ Forgot Password
 export const forgotPassword = async (req, res) => {

@@ -66,19 +66,20 @@ export const fetchalluser = async (req, res) => {
 // Send a message (with optional image)
 export const sendmessage = async (req, res) => {
   try {
-    const senderId = req.user._id; // ✅ fixed destructuring mistake
-    const { id: reciverId } = req.params.id;
+    const senderId = req.user._id;
+    const reciverId = req.params.id; // ✅ correct
+
     const { text, image } = req.body;
 
     let imageurl;
     if (image) {
       const uploadresponse = await claudinary.uploader.upload(image);
-      imageurl = uploadresponse.secure_url; // ✅ fixed function call
+      imageurl = uploadresponse.secure_url;
     }
 
     const message = new Message({
       senderId,
-      reciverId,
+      receiverId: reciverId, // ✅ match schema field
       text,
       image: imageurl,
     });
@@ -86,13 +87,14 @@ export const sendmessage = async (req, res) => {
     await message.save();
 
     res.status(200).json({
-      message: "Message sent",
+      message,
       success: true,
     });
   } catch (error) {
     return res.status(500).send("Error: " + error.message);
   }
 };
+
 
 // Fetch chat messages between current user and another user
 export const getmessage = async (req, res) => {
