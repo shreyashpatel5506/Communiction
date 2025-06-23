@@ -9,7 +9,7 @@ const SideBar = () => {
     user,
     selectedUser,
     isUserLoading,
-    SetselectedUSer
+    setSelectedUser
   } = useChatStore();
 
   useEffect(() => {
@@ -17,13 +17,12 @@ const SideBar = () => {
     // eslint-disable-next-line
   }, []);
 
-  const FollowedUser = user || [];
-  console.log("Sidebar Users:", FollowedUser);
+  const followedUsers = user || [];
 
   if (isUserLoading) return <SidebarSkeleton />;
 
   return (
-    <aside className='min-h-screen  w-20 lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200'>
+    <aside className='min-h-screen w-20 lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200'>
       <div className="border-b border-base-300 w-full p-5">
         <div className="flex items-center gap-2">
           <Users className="size-6" />
@@ -32,14 +31,14 @@ const SideBar = () => {
       </div>
 
       <div className="overflow-y-auto w-full py-3">
-        {FollowedUser.length > 0 ? (
-          FollowedUser.map((user) => (
+        {followedUsers.length > 0 ? (
+          followedUsers.map((user) => (
             <button
               key={user._id}
-              onClick={() => SetselectedUSer(user)}
+              onClick={() => setSelectedUser(user)}
               className={`w-full p-3 flex items-center gap-3
                 hover:bg-base-300 transition-colors
-                ${selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-base-300" : ""}`}
+                ${selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-blue-400" : ""}`}
             >
               <div className="relative mx-auto lg:mx-0">
                 <img
@@ -55,10 +54,6 @@ const SideBar = () => {
                   online
                 </div>
               </div>
-
-
-
-
             </button>
           ))
         ) : (

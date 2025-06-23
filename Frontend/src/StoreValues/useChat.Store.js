@@ -1,6 +1,6 @@
-import { create } from 'zustand'
+import { create } from 'zustand';
 import { axiosInstance } from "../lib/axios";
-import toast from 'react-hot-toast'
+import toast from 'react-hot-toast';
 
 export const useChatStore = create((set, get) => ({
     messages: [],
@@ -12,22 +12,17 @@ export const useChatStore = create((set, get) => ({
     getFollowedUser: async () => {
         try {
             set({ isUserLoading: true });
-
             const res = await axiosInstance.get('/message/follwers');
-
             const followersArray = res.data.followers;
+
             if (followersArray.length > 0) {
                 const followingIds = followersArray[0].followingIds;
-
-                // ✅ Include required fields matching frontend usage
                 const simplifiedFollowers = followingIds.map(follower => ({
                     _id: follower._id,
-                    fullName: follower.name, // renamed to match frontend
+                    fullName: follower.name,
                     email: follower.email,
-                    profilePic: follower.profilePicture // renamed to match frontend
+                    profilePic: follower.profilePicture
                 }));
-
-                console.log("Simplified Followers:", simplifiedFollowers);
                 set({ user: simplifiedFollowers });
             } else {
                 set({ user: [] });
@@ -35,39 +30,39 @@ export const useChatStore = create((set, get) => ({
         } catch (error) {
             console.log(error);
         } finally {
-            set({ isUserLoading: false }); // ✅ fixed: should be `isUserLoading`, not `isLoadingFollowers`
+            set({ isUserLoading: false });
         }
     },
 
     getMessages: async (userId) => {
-        set({ isMessagesLoading: true })
+        set({ isMessagesLoading: true });
         try {
-            const res = await axiosInstance.get('/message/get-message/${user.id}');
-            set({ messages: response.data })
+            const res = await axiosInstance.get(`/message/get-message/${userId}`);
+            const messagesArray = Array.isArray(res.data) ? res.data : [];  // <-- safeguard
+            set({ messages: messagesArray });
         } catch (error) {
-            toast.error(error.response.data.message)
+            toast.error(error.response?.data?.message || "Failed to fetch messages");
+            set({ messages: [] }); // fallback to empty array on error
         } finally {
-            set({ isMessagesLoading: false })
+            set({ isMessagesLoading: false });
         }
     },
 
-    SetselectedUSer: (selectedUser) => {
-        set({ selectedUser })
+
+    setSelectedUser: (selectedUser) => {
+        set({ selectedUser });
     },
+
     sendMessage: async (messageData) => {
         const { selectedUser, messages } = get();
         try {
             const res = await axiosInstance.post(
-                `/message/send-message/${selectedUser._id}`, // ✅ URL is correct
+                `/message/send-message/${selectedUser._id}`,
                 messageData
             );
-
-            // ✅ Add new message to local state
             set({ messages: [...messages, res.data.message] });
         } catch (error) {
             console.log("Failed to send message:", error);
         }
     }
-
-
 }));
