@@ -12,18 +12,19 @@ export const useChatStore = create((set) => ({
     getFollowedUser: async () => {
         try {
             set({ isUserLoading: true });
+
             const res = await axiosInstance.get('/message/follwers');
 
-            // Check if followers array is not empty
             const followersArray = res.data.followers;
             if (followersArray.length > 0) {
                 const followingIds = followersArray[0].followingIds;
 
-                // Extract only the required fields: name, email, profilePicture
+                // ✅ Include required fields matching frontend usage
                 const simplifiedFollowers = followingIds.map(follower => ({
-                    name: follower.name,
+                    _id: follower._id,
+                    fullName: follower.name, // renamed to match frontend
                     email: follower.email,
-                    profilePicture: follower.profilePicture
+                    profilePic: follower.profilePicture // renamed to match frontend
                 }));
 
                 console.log("Simplified Followers:", simplifiedFollowers);
@@ -34,9 +35,10 @@ export const useChatStore = create((set) => ({
         } catch (error) {
             console.log(error);
         } finally {
-            set({ isLoadingFollowers: false });
+            set({ isUserLoading: false }); // ✅ fixed: should be `isUserLoading`, not `isLoadingFollowers`
         }
     },
+
     getMessages: async (userId) => {
         try {
             const res = await axiosInstance.get('/message/get-message/{user.id}');
