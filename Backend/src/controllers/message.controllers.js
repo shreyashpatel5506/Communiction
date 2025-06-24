@@ -67,7 +67,7 @@ export const fetchalluser = async (req, res) => {
 export const sendmessage = async (req, res) => {
   try {
     const senderId = req.user._id;
-    const reciverId = req.params.id; // ✅ correct
+    const receiverId = req.params.id; // ✅ correct
 
     const { text, image } = req.body;
 
@@ -79,7 +79,7 @@ export const sendmessage = async (req, res) => {
 
     const message = new Message({
       senderId,
-      receiverId: reciverId, // ✅ match schema field
+      receiverId: receiverId, // ✅ match schema field
       text,
       image: imageurl,
     });
@@ -100,14 +100,17 @@ export const sendmessage = async (req, res) => {
 export const getmessage = async (req, res) => {
   try {
     const myid = req.user._id;
+    console.log(req.user);
     const { id: chatId } = req.params;
+    console.log("Fetching messages for chatId:", chatId, "myid:", myid);
 
     const messages = await Message.find({
       $or: [
-        { senderId: myid, reciverId: chatId },
-        { senderId: chatId, reciverId: myid },
+        { senderId: myid, receiverId: chatId },   // ✅ fixed spelling
+        { senderId: chatId, receiverId: myid },   // ✅ fixed spelling
       ],
     });
+
 
     res.status(200).json({
       message: "Messages fetched",
