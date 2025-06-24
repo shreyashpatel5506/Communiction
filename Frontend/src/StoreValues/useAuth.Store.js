@@ -1,8 +1,10 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
+import { io } from "socket.io-client";
 
-export const useAuth = create((set) => ({
+const SOCKET_URL = "http://localhost:5001"; // Update with your server URL
+export const useAuth = create((set, get) => ({
     authuser: null,
     isSignup: false,
     isLogin: false,
@@ -11,6 +13,7 @@ export const useAuth = create((set) => ({
     isUpdateProfile: false,
     isCheckAuth: true,
     onlineUsers: [],
+    socket: null,
 
     checkAuth: async () => {
         try {
@@ -21,6 +24,9 @@ export const useAuth = create((set) => ({
                 set({ authuser });
                 localStorage.setItem('authuser', JSON.stringify(authuser));
                 console.log("Authenticated user:", authuser);
+
+                // Connect socket after checking auth
+                get().connectSocket();
             }
         } catch (error) {
             set({ authuser: null });
@@ -70,6 +76,9 @@ export const useAuth = create((set) => ({
                 set({ authuser, isSignup: true });
                 localStorage.setItem('authuser', JSON.stringify(authuser));
                 toast.success('Signup successful');
+
+
+                get().connectSocket();
                 return true;
             } else {
                 toast.error(res.data.message || 'Signup failed');
@@ -89,6 +98,9 @@ export const useAuth = create((set) => ({
                 set({ authuser });
                 localStorage.setItem('authuser', JSON.stringify(authuser));
                 toast.success('Login successful');
+
+
+                get().connectSocket(); // Connect socket after login
                 return true;
             } else {
                 toast.error('Login failed');
@@ -106,6 +118,8 @@ export const useAuth = create((set) => ({
             set({ authuser: null });
             localStorage.removeItem('authuser');
             toast.success("Logged out");
+
+            get().disconnectSocket(); // Disconnect socket on logout
         } catch (error) {
             toast.error("Logout failed");
         }
@@ -143,6 +157,34 @@ export const useAuth = create((set) => ({
             toast.success('Profile updated');
         } catch (error) {
             toast.error('Update failed');
+        }
+    },
+
+    connectSocket: () => {
+        const { authuser } = get();
+        if (!authuser || get().socket?.connected) {
+            console.error("Cannot connect socket: No authenticated user");
+            return;
+        }
+
+        const socket = io(SOCKET_URL, {
+            query: {
+                userId: authuser._id // Pass user ID as a query parameter
+            }
+        });
+        socket.connect();
+        set({ socket: socket })
+
+        socket.on('getOnlineUsers', (userIds) => {
+            set({ onlineUsers: userIds });
+            console.log("Online users updated:", userIds);
+        });
+    },
+    disconnectSocket: () => {
+        const { socket } = get();
+        if (socket) {
+            socket.disconnect();
+            console.log("Socket disconnected");
         }
     }
 }));

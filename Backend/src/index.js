@@ -8,25 +8,22 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import connect from "./lib/db.js";
 import path from "path";
+import { app, server } from "./lib/socket.js"; // Importing app and server from socket.js
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
-const app = express();
 
 // ✅ Middleware to parse incoming JSON
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
 
 // ✅ Debug middleware to log all requests
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  console.log("Headers:", req.headers);
-  console.log("Body before parsing:", req.body);
-  next();
-});
+// app.use((req, res, next) => {
+//   next();
+// });
 
 // ✅ Parse cookies
 app.use(cookieParser());
@@ -50,7 +47,7 @@ console.log("index MY_PASSWORD:", process.env.MY_PASSWORD);
 console.log("index JWT_SECRET:", process.env.JWT_SECRET);
 
 // ✅ Connect to DB and start server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   connect();
   console.log("Server is running on port: " + PORT);
 });
