@@ -125,9 +125,9 @@ const ForgotPassword = () => {
 
                     {/* Step Indicator */}
                     <ul className="steps w-full">
-                        <li className={step >= 1 ? "step step-primary" : "step"}>Send OTP</li>
-                        <li className={step >= 2 ? "step step-primary" : "step"}>Verify OTP</li>
-                        <li className={step === 3 ? "step step-primary" : "step"}>Reset Password</li>
+                        <li className={step >= 1 ? "step step-primary transition-all 0.5s ease-in" : "step"}>Send OTP</li>
+                        <li className={step >= 2 ? "step step-primary transition-all 0.5s ease-in" : "step"}>Verify OTP</li>
+                        <li className={step === 3 ? "step step-primary transition-all 0.5s ease-in" : "step"}>Reset Password</li>
                     </ul>
 
                     {/* Step 1: Send OTP */}

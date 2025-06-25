@@ -46,7 +46,7 @@ const Navbar = () => {
     return list.some(user => user._id === userId);
   };
 
-  const pendingRequestUsersCount = pendingRequestUsers.length;
+  const pendingRequestUsersCount = (pendingRequestUsers || []).length;
 
   return (
     <header className="bg-base-100 shadow-md border-b border-base-300 fixed w-full z-50 backdrop-blur-lg bg-base-100/80">
