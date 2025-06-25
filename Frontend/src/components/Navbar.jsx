@@ -14,6 +14,7 @@ const Navbar = () => {
     isLoadingAllUsers,
     followers,
     sendingRequestUsers,
+    pendingRequestUsers,
   } = usePeoples();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,6 +45,8 @@ const Navbar = () => {
   const isUserInList = (userId, list) => {
     return list.some(user => user._id === userId);
   };
+
+  const pendingRequestUsersCount = pendingRequestUsers.length;
 
   return (
     <header className="bg-base-100 shadow-md border-b border-base-300 fixed w-full z-50 backdrop-blur-lg bg-base-100/80">
@@ -114,7 +117,11 @@ const Navbar = () => {
 
               <Link to={"/profile"} className={`btn btn-sm gap-2`}>
                 <User className="size-5" />
-                <span className="hidden sm:inline">Profile</span>
+                <span className="hidden sm:inline relative">Profile</span>
+                {pendingRequestUsersCount > 0 && (
+                  <div className="badge badge-primary badge-lg absolute top-0 right-0">{pendingRequestUsersCount}</div>
+                )}
+
               </Link>
 
               <button className="flex gap-2 items-center" onClick={logout}>

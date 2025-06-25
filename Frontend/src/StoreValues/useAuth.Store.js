@@ -3,7 +3,7 @@ import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:5001"; // Update with your server URL
+const SOCKET_URL = import.meta.env.MODE === 'development' ? "http://localhost:5001/" : "/"; // Update with your server URL
 export const useAuth = create((set, get) => ({
     authuser: null,
     isSignup: false,
