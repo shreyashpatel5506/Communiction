@@ -4,6 +4,8 @@ import SendingRequest from "../models/sendingrequest.js";
 import Message from "../models/message.model.js";
 import user from "../models/user.model.js";
 import claudinary from "../lib/cloudinary.js";
+import { io } from "../lib/socket.js";
+import { getReciverSocketId } from "../lib/socket.js";
 
 // Fetch followers of the current user
 export const fetchfollowersuser = async (req, res) => {
@@ -85,6 +87,12 @@ export const sendmessage = async (req, res) => {
     });
 
     await message.save();
+
+    // Emit the message to the receiver's socket
+    const receiverSocketId = getReciverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", message);
+    }
 
     res.status(200).json({
       message,

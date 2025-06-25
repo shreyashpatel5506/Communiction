@@ -5,18 +5,24 @@ import MessageInput from './MessageInput';
 import MessageseSkelton from './skelton/messageseSkelton';
 import { useAuth } from '../StoreValues/useAuth.Store';
 
+
 const ChatContainer = () => {
-    const { selectedUser, getMessages, messages, isMessagesLoading } = useChatStore();
+    const { selectedUser, getMessages, messages, isMessagesLoading, subscribeMessages, unsubscribeMessages } = useChatStore();
     const { authuser } = useAuth();
     const avatarFallback = "/avatar.png";
     const bottomRef = useRef(null);
 
     // Fetch messages on user select
     useEffect(() => {
-        if (selectedUser?._id) {
-            getMessages(selectedUser._id);
-        }
-    }, [selectedUser?._id]);
+
+        getMessages(selectedUser._id);
+
+        subscribeMessages()
+
+        return () => unsubscribeMessages();
+
+
+    }, [selectedUser?._id, getMessages, subscribeMessages, unsubscribeMessages]);
 
     // Scroll to bottom when messages update
     useEffect(() => {

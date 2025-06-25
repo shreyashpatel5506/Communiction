@@ -6,6 +6,9 @@ import express from 'express';
 const app = express();
 const server = http.createServer(app);
 
+export function getReciverSocketId(userId) {
+    return userSocketMap[userId]; // Retrieve the socket ID for the given userId
+}
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:5173", // Allow all origins for development; restrict in production
