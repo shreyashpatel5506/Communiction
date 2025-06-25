@@ -9,7 +9,7 @@ const Homepage = () => {
 
   return (
     <div className="h-max bg-base-200">
-      <div className="flex item-center justify-center pt-20 px-4">
+      <div className="flex item-center justify-center pt-18 px-4">
         <div className="bg-base-100 rounded-lg shadow-cl w-full max-w-6xl h-[calc(100vh - 8rem)]">
           <div className="flex h-full rounded-lg overflow-hidden">
             <SideBar />
