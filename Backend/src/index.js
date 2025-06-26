@@ -28,7 +28,7 @@ app.use(express.urlencoded({ limit: '20mb', extended: true }));
 // ✅ Parse cookies
 app.use(cookieParser());
 
-// ✅ Enable CORS with credentials
+// ✅ Enable CORS with credentials support
 app.use(
   cors({
     origin: "http://localhost:5173", // Frontend origin 
