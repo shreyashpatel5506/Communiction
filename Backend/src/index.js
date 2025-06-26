@@ -1,29 +1,22 @@
-// index.js
 import express from "express";
 import authRoutes from "./routes/auth.routes.js";
-import followerRoutes from "./routes/follower.routes.js"
+import followerRoutes from "./routes/follower.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import connect from "./lib/db.js";
 import path from "path";
-import { app, server } from "./lib/socket.js"; // Importing app and server from socket.js
+import { app, server } from "./lib/socket.js"; // Express app from socket.js
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
-
-// ✅ Middleware to parse incoming JSON
+// ✅ Middleware to parse JSON and URL-encoded bodies
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
-
-// ✅ Debug middleware to log all requests
-// app.use((req, res, next) => {
-//   next();
-// });
 
 // ✅ Parse cookies
 app.use(cookieParser());
@@ -31,32 +24,43 @@ app.use(cookieParser());
 // ✅ Enable CORS with credentials
 app.use(
   cors({
-    origin: "http://localhost:5173", // Frontend origin
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
 
-// ✅ Route setup (MUST be before server starts listening)
+// ✅ Prevent malformed paths from crashing app
+app.use((req, res, next) => {
+  const invalidPattern = /\/:[^\w]/;
+  if (invalidPattern.test(req.path)) {
+    console.error("❌ Blocked malformed route:", req.path);
+    return res.status(400).send("Malformed route");
+  }
+  next();
+});
+
+// ✅ API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/follower", followerRoutes);
 app.use("/api/message", messageRoutes);
 
+// ✅ Serve frontend in production
 if (process.env.NODE_ENV === "production") {
-  // Serve static files from the React frontend app
   app.use(express.static(path.join(__dirname, "../Frontend/dist")));
-  // Handle React routing, return all requests to React app
+
   app.get("*", (req, res) => {
+    console.log("⚠️ Wildcard route hit:", req.originalUrl);
     res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
   });
-
 }
-// ✅ Debug environment variables
+
+// ✅ Debug: Environment variables
 console.log("index MY_MAIL:", process.env.MY_MAIL);
 console.log("index MY_PASSWORD:", process.env.MY_PASSWORD);
 console.log("index JWT_SECRET:", process.env.JWT_SECRET);
 
-// ✅ Connect to DB and start server
+// ✅ Connect DB and start server
 server.listen(PORT, () => {
   connect();
-  console.log("Server is running on port: " + PORT);
+  console.log("🚀 Server running on port:", PORT);
 });
