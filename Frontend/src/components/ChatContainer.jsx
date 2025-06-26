@@ -4,7 +4,7 @@ import ChatHeader from './ChatHeader';
 import MessageInput from './MessageInput,jsx';
 import MessageseSkelton from './skelton/MessageseSkelton.jsx';
 import { useAuth } from '../StoreValues/useAuth.Store.js';
-import avatarFallback from "../assets/avatar-default-symbolic.svg" // Adjust the path as necessary
+import avatarFallback from "../assets/avatar-default-symbolic.svg" // Adjust the path as necessarys
 
 
 const ChatContainer = () => {
