@@ -41,26 +41,16 @@ app.use("/api/auth", authRoutes);
 app.use("/api/follower", followerRoutes);
 app.use("/api/message", messageRoutes);
 
-if (process.env.NODE_ENV === "production") {
-  // Serve static files from the React frontend app
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
-  // Handle React routing, return all requests to React app
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-  });
-
+// ✅ Log all registered routes (after all routes are registered)
+if (app._router && app._router.stack) {
+  app._router.stack
+    .filter(r => r.route)
+    .forEach(r => {
+      console.log(`${Object.keys(r.route.methods).join(',').toUpperCase()} ${r.route.path}`);
+    });
+} else {
+  console.log("app._router or app._router.stack is undefined");
 }
-// ✅ Debug environment variables
-console.log("index MY_MAIL:", process.env.MY_MAIL);
-console.log("index MY_PASSWORD:", process.env.MY_PASSWORD);
-console.log("index JWT_SECRET:", process.env.JWT_SECRET);
-
-// Add this before server.listen(...)
-app._router.stack
-  .filter(r => r.route)
-  .forEach(r => {
-    console.log(`${Object.keys(r.route.methods).join(',').toUpperCase()} ${r.route.path}`);
-  });
 
 // ✅ Connect to DB and start server
 server.listen(PORT, () => {
