@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useChatStore } from '../StoreValues/useChat.Store';
 import ChatHeader from './ChatHeader';
 import MessageInput from './MessageInput';
-import MessageseSkelton from './skelton/messageseSkelton';
+import MessageseSkelton from './skelton/MessageseSkelton';
 import { useAuth } from '../StoreValues/useAuth.Store';
 import avatarFallback from "../assets/avatar-default-symbolic.svg" // Adjust the path as necessary
 
