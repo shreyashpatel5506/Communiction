@@ -148,7 +148,6 @@ const ProfilePage = () => {
                 />
                 <div>
                   <h4 className="font-medium text-sm">{follower.name}</h4>
-                  <p className="text-xs text-zinc-400 truncate max-w-[160px]">{follower.email}</p>
                 </div>
               </div>
             ))}
@@ -167,7 +166,6 @@ const ProfilePage = () => {
                     className="w-10 h-10 rounded-full object-cover"
                   />
                   <span className="font-medium">{request.name}</span>
-                  <span className="text-sm text-zinc-400">{request.email}</span>
                 </div>
 
                 <div className="flex gap-2">
@@ -210,7 +208,6 @@ const ProfilePage = () => {
                     className="w-10 h-10 rounded-full object-cover"
                   />
                   <span className="font-medium">{request.name}</span>
-                  <span className="text-sm text-zinc-400">{request.email}</span>
                 </div>
 
               </div>

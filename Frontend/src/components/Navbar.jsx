@@ -81,7 +81,6 @@ const Navbar = () => {
                                 <img src={user.profilePicture || avtatar} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
                                 <div>
                                   <p className="text-sm font-medium">{user.name}</p>
-                                  <p className="text-xs text-gray-500">{user.email}</p>
                                 </div>
                               </div>
                               {showSendButton && (
@@ -156,7 +155,6 @@ const Navbar = () => {
                             <img src={user.profilePicture || avtatar} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
                             <div>
                               <p className="text-sm font-medium">{user.name}</p>
-                              <p className="text-xs text-gray-500">{user.email}</p>
                             </div>
                           </div>
                           {showSendButton && (
