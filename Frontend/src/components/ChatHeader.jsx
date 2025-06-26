@@ -2,6 +2,9 @@ import { X } from "lucide-react";
 import { useAuth } from "../StoreValues/useAuth.Store";
 import { useChatStore } from "../StoreValues/useChat.Store";
 
+import avatarFallback from "../assets/avatar-default-symbolic.svg" // Adjust the path as necessary
+
+
 const ChatHeader = () => {
     const { selectedUser, setSelectedUser } = useChatStore();
     const { onlineUsers } = useAuth();
@@ -15,7 +18,7 @@ const ChatHeader = () => {
                     <div className="avatar">
                         <div className="w-10 h-10 rounded-full relative overflow-hidden">
                             <img
-                                src={selectedUser.profilePic || "/avatar.png"}
+                                src={selectedUser.profilePic || avatarFallback}
                                 alt={selectedUser.fullName}
                                 className="object-cover w-full h-full"
                             />

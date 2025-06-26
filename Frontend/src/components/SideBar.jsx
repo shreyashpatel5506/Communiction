@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useChatStore } from "../StoreValues/useChat.Store";
 import { useAuth } from "../StoreValues/useAuth.Store";
+
+import avatarFallback from "../assets/avatar-default-symbolic.svg" // Adjust the path as necessary
+
 import SidebarSkeleton from "./skelton/SidebarSkelton.jsx";
 import { X } from "lucide-react";
 
@@ -80,7 +83,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           >
             <div className="relative">
               <img
-                src={user.profilePic || "/avatar.png"}
+                src={user.profilePic || avatarFallback}
                 alt={user.name}
                 className="size-10 object-cover rounded-full"
               />

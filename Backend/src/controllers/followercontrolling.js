@@ -2,6 +2,7 @@ import PendingRequest from "../models/pendingrequest.js";
 import SendingRequest from "../models/sendingrequest.js";
 import User from "../models/user.model.js";
 import Follower from "../models/follwer.user.model.js";
+import { Socket } from "socket.io";
 
 // Send follow request
 export const sendingfollowingrequest = async (req, res) => {
@@ -121,6 +122,8 @@ export const acceptrequest = async (req, res) => {
         await addFollower(acceptrequestId, userId);
 
         return res.status(200).json({ message: "Request accepted", success: true });
+
+
 
     } catch (error) {
         res.status(500).json({ message: error.message });

@@ -23,8 +23,9 @@ const Navbar = () => {
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      if (searchQuery.trim()) {
-        fetchAllUsers(searchQuery);
+      const trimmed = searchQuery.trim();
+      if (trimmed) {
+        fetchAllUsers(trimmed);
         setShowDropdown(true);
       } else {
         setShowDropdown(false);
@@ -56,13 +57,46 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center gap-4">
             {authuser && (
               <>
-                <input
-                  type="text"
-                  placeholder="Search users..."
-                  className="input input-bordered input-sm w-64"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search users..."
+                    className="input input-bordered input-sm w-64"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {showDropdown && allusers.length > 0 && (
+                    <div className="absolute z-50 top-10 left-0 w-full border border-base-300 rounded-lg bg-base-100 shadow-md max-h-60 overflow-auto">
+                      {isLoadingAllUsers ? (
+                        <div className="p-3 text-center text-sm">Loading...</div>
+                      ) : (
+                        allusers.map((user) => {
+                          const isFollower = isUserInList(user._id, followers);
+                          const isRequested = isUserInList(user._id, sendingRequestUsers);
+                          const showSendButton = !isFollower && !isRequested;
+
+                          return (
+                            <div key={user._id} className="flex justify-between items-center p-2 hover:bg-base-200 transition rounded">
+                              <div className="flex items-center gap-2">
+                                <img src={user.profilePicture || avtatar} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
+                                <div>
+                                  <p className="text-sm font-medium">{user.name}</p>
+                                  <p className="text-xs text-gray-500">{user.email}</p>
+                                </div>
+                              </div>
+                              {showSendButton && (
+                                <button className="btn btn-xs btn-primary rounded-full" onClick={() => handleSendRequest(user._id)}>
+                                  <Send className="size-4" />
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 <Link to="/profile" className="btn btn-sm relative">
                   <User className="size-5" />
                   {pendingRequestUsersCount > 0 && (

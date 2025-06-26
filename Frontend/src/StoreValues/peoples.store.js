@@ -113,6 +113,7 @@ export const usePeoples = create((set) => ({
                 toast.success(
                     "Request accepted successfully"
                 )
+                navigate('/profile');
             }
             else {
                 toast.error(
@@ -132,6 +133,7 @@ export const usePeoples = create((set) => ({
                 toast.success(
                     "Request rejected successfully"
                 )
+                navigate('/profile');
             }
             else {
                 toast.error(

@@ -4,12 +4,13 @@ import ChatHeader from './ChatHeader';
 import MessageInput from './MessageInput';
 import MessageseSkelton from './skelton/messageseSkelton';
 import { useAuth } from '../StoreValues/useAuth.Store';
+import avatarFallback from "../assets/avatar-default-symbolic.svg" // Adjust the path as necessary
 
 
 const ChatContainer = () => {
     const { selectedUser, getMessages, messages, isMessagesLoading, subscribeMessages, unsubscribeMessages } = useChatStore();
     const { authuser } = useAuth();
-    const avatarFallback = "/avatar.png";
+
     const bottomRef = useRef(null);
 
     // Fetch messages on user select
