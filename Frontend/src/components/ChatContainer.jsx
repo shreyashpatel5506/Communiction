@@ -46,7 +46,7 @@ const ChatContainer = () => {
     }
 
     return (
-        <div className='flex-1 flex flex-col overflow-hidden h-screen'>
+        <div className='flex-1 flex flex-col overflow-hidden pt-20 h-screen lg:pt-24'>
             <ChatHeader />
 
             {/* Scrollable messages area */}
