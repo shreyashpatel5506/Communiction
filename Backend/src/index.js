@@ -20,6 +20,14 @@ const __dirname = path.resolve();
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
 
+if (process.env.NODE_ENV === "production") {
+  // Serve static files from the React frontend app
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  // Handle React routing, return all requests to React app
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  });
+}
 // ✅ Debug middleware to log all requests
 // app.use((req, res, next) => {
 //   next();
@@ -28,10 +36,10 @@ app.use(express.urlencoded({ limit: '20mb', extended: true }));
 // ✅ Parse cookies
 app.use(cookieParser());
 
-// ✅ Enable CORS with credentials support
+// ✅ Enable CORS with credentials
 app.use(
   cors({
-    origin: "http://localhost:5173", // Frontend origin 
+    origin: "http://localhost:5173", // Frontend origin
     credentials: true,
   })
 );
@@ -41,16 +49,19 @@ app.use("/api/auth", authRoutes);
 app.use("/api/follower", followerRoutes);
 app.use("/api/message", messageRoutes);
 
-// ✅ Log all registered routes (after all routes are registered)
-if (app._router && app._router.stack) {
-  app._router.stack
-    .filter(r => r.route)
-    .forEach(r => {
-      console.log(`${Object.keys(r.route.methods).join(',').toUpperCase()} ${r.route.path}`);
-    });
-} else {
-  console.log("app._router or app._router.stack is undefined");
+if (process.env.NODE_ENV === "production") {
+  // Serve static files from the React frontend app
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  // Handle React routing, return all requests to React app
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  });
+
 }
+// ✅ Debug environment variables
+console.log("index MY_MAIL:", process.env.MY_MAIL);
+console.log("index MY_PASSWORD:", process.env.MY_PASSWORD);
+console.log("index JWT_SECRET:", process.env.JWT_SECRET);
 
 // ✅ Connect to DB and start server
 server.listen(PORT, () => {
