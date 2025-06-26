@@ -55,6 +55,13 @@ console.log("index MY_MAIL:", process.env.MY_MAIL);
 console.log("index MY_PASSWORD:", process.env.MY_PASSWORD);
 console.log("index JWT_SECRET:", process.env.JWT_SECRET);
 
+// Add this before server.listen(...)
+app._router.stack
+  .filter(r => r.route)
+  .forEach(r => {
+    console.log(`${Object.keys(r.route.methods).join(',').toUpperCase()} ${r.route.path}`);
+  });
+
 // ✅ Connect to DB and start server
 server.listen(PORT, () => {
   connect();
