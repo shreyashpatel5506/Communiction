@@ -60,22 +60,45 @@ export const sendOtp = async (req, res) => {
   }
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
   const mailOptions = {
     from: `PulseTalk <${process.env.MY_MAIL}>`,
     to: email,
-    subject: "Your PulseTalk OTP Code",
+    subject: "🔐 Your PulseTalk OTP Code",
     html: `
-      <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 32px; border-radius: 8px; max-width: 400px; margin: auto;">
-        <h2 style="color: #6C63FF; text-align: center; margin-bottom: 16px;">PulseTalk Verification</h2>
-        <p style="font-size: 16px; color: #333; text-align: center;">Your One-Time Password (OTP) for PulseTalk is:</p>
-        <div style="font-size: 32px; font-weight: bold; color: #6C63FF; text-align: center; margin: 24px 0; letter-spacing: 4px;">${otp}</div>
-        <p style="font-size: 14px; color: #555; text-align: center;">This code is valid for 10 minutes. Please do not share it with anyone.</p>
-        <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;">
-        <p style="font-size: 12px; color: #aaa; text-align: center;">If you did not request this, please ignore this email.<br>Thank you for using <b>PulseTalk</b>!</p>
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6fa; padding: 40px 0;">
+      <div style="max-width: 480px; background: #ffffff; border-radius: 12px; margin: auto; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); overflow: hidden;">
+        <div style="background: linear-gradient(to right, #6C63FF, #5848D8); padding: 20px;">
+          <h1 style="color: #fff; text-align: center; margin: 0;">PulseTalk</h1>
+        </div>
+        <div style="padding: 30px;">
+          <h2 style="text-align: center; color: #333;">Verify Your Email</h2>
+          <p style="text-align: center; color: #666; font-size: 16px;">
+            Hello 👋, here is your One-Time Password (OTP) for PulseTalk:
+          </p>
+          <div style="text-align: center; margin: 24px 0;">
+            <span style="display: inline-block; background: #6C63FF; color: #fff; font-size: 32px; font-weight: bold; padding: 14px 28px; border-radius: 8px; letter-spacing: 6px;">
+              ${otp}
+            </span>
+          </div>
+          <p style="text-align: center; font-size: 14px; color: #888;">
+            This OTP is valid for <strong>10 minutes</strong>. Please don’t share it with anyone.
+          </p>
+          <div style="margin-top: 30px; text-align: center;">
+            <a href="#" style="background: linear-gradient(to right, #6C63FF, #8572FF); color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+              Visit PulseTalk
+            </a>
+          </div>
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+          <p style="font-size: 12px; color: #aaa; text-align: center;">
+            Didn’t request this code? Just ignore this email.<br><br>
+            — The PulseTalk Team 💬
+          </p>
+        </div>
       </div>
-    `,
+    </div>
+  `,
   };
+
 
   try {
     const info = await transporter.sendMail(mailOptions);
