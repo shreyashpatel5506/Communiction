@@ -2,7 +2,7 @@ import PendingRequest from "../models/pendingrequest.js";
 import SendingRequest from "../models/sendingrequest.js";
 import User from "../models/user.model.js";
 import Follower from "../models/follwer.user.model.js";
-import { Socket } from "socket.io";
+import { io, getReciverSocketId } from "../lib/socket.js";
 
 // Send follow request
 export const sendingfollowingrequest = async (req, res) => {
@@ -60,6 +60,12 @@ export const sendingfollowingrequest = async (req, res) => {
 
         await sendingRequest.save();
         await pendingRequest.save();
+
+        // Notify the target user about the new request
+        const targetSocketId = getReciverSocketId(usersendrequestId);
+        if (targetSocketId) {
+            io.to(targetSocketId).emit("refreshUserData");
+        }
 
         return res.status(200).json({ message: "Request sent successfully", success: true });
 
@@ -121,10 +127,17 @@ export const acceptrequest = async (req, res) => {
         await addFollower(userId, acceptrequestId);
         await addFollower(acceptrequestId, userId);
 
+        // Notify both users to refresh their data
+        const targetSocketId = getReciverSocketId(acceptrequestId);
+        if (targetSocketId) {
+            io.to(targetSocketId).emit("refreshUserData");
+        }
+        const selfSocketId = getReciverSocketId(userId);
+        if (selfSocketId) {
+            io.to(selfSocketId).emit("refreshUserData");
+        }
+
         return res.status(200).json({ message: "Request accepted", success: true });
-
-
-
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -152,8 +165,26 @@ export const rejectrequest = async (req, res) => {
         );
         await pendingRequest.save();
 
-        return res.status(200).json({ message: "Request rejected", success: true });
+        // Remove from sending requests of sender
+        const sendingRequest = await SendingRequest.findOne({ userId: rejectrequestId });
+        if (sendingRequest) {
+            sendingRequest.sendingRequestIds = sendingRequest.sendingRequestIds.filter(
+                id => !id.equals(userId)
+            );
+            await sendingRequest.save();
+        }
 
+        // Notify both users to refresh their data
+        const targetSocketId = getReciverSocketId(rejectrequestId);
+        if (targetSocketId) {
+            io.to(targetSocketId).emit("refreshUserData");
+        }
+        const selfSocketId = getReciverSocketId(userId);
+        if (selfSocketId) {
+            io.to(selfSocketId).emit("refreshUserData");
+        }
+
+        return res.status(200).json({ message: "Request rejected", success: true });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -180,8 +211,17 @@ export const unfollowuser = async (req, res) => {
         );
         await follower.save();
 
-        return res.status(200).json({ message: "Unfollowed successfully", success: true });
+        // Notify both users to refresh their data
+        const targetSocketId = getReciverSocketId(unfollowuserId);
+        if (targetSocketId) {
+            io.to(targetSocketId).emit("refreshUserData");
+        }
+        const selfSocketId = getReciverSocketId(userId);
+        if (selfSocketId) {
+            io.to(selfSocketId).emit("refreshUserData");
+        }
 
+        return res.status(200).json({ message: "Unfollowed successfully", success: true });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

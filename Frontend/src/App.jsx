@@ -11,6 +11,7 @@ import { useAuth } from './StoreValues/useAuth.Store.js';
 import { Loader } from "lucide-react";
 import { Toaster } from 'react-hot-toast';
 import { useThemeStore } from './StoreValues/useTheme.Store.js';
+import { useSocketUserSync } from "./StoreValues/useSocketUserSync";
 
 const App = () => {
   const { authuser, checkAuth, isCheckAuth, onlineUSers } = useAuth();
@@ -20,6 +21,8 @@ const App = () => {
   useEffect(() => {
     checkAuth();
   }, []);
+
+  useSocketUserSync();
 
   if (isCheckAuth) {
     return (
