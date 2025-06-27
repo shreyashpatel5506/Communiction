@@ -62,10 +62,19 @@ export const sendOtp = async (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
   const mailOptions = {
-    from: process.env.MY_MAIL,
+    from: `PulseTalk <${process.env.MY_MAIL}>`,
     to: email,
-    subject: "Your OTP Code",
-    text: `Your OTP is: ${otp}`,
+    subject: "Your PulseTalk OTP Code",
+    html: `
+      <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 32px; border-radius: 8px; max-width: 400px; margin: auto;">
+        <h2 style="color: #6C63FF; text-align: center; margin-bottom: 16px;">PulseTalk Verification</h2>
+        <p style="font-size: 16px; color: #333; text-align: center;">Your One-Time Password (OTP) for PulseTalk is:</p>
+        <div style="font-size: 32px; font-weight: bold; color: #6C63FF; text-align: center; margin: 24px 0; letter-spacing: 4px;">${otp}</div>
+        <p style="font-size: 14px; color: #555; text-align: center;">This code is valid for 10 minutes. Please do not share it with anyone.</p>
+        <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;">
+        <p style="font-size: 12px; color: #aaa; text-align: center;">If you did not request this, please ignore this email.<br>Thank you for using <b>PulseTalk</b>!</p>
+      </div>
+    `,
   };
 
   try {

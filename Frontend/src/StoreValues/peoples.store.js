@@ -15,25 +15,20 @@ export const usePeoples = create((set) => ({
         try {
             set({ isLoadingFollowers: true });
             const res = await axiosInstance.get('/message/follwers');
-
-            // Check if followers array is not empty
             const followersArray = res.data.followers;
             if (followersArray.length > 0) {
                 const followingIds = followersArray[0].followingIds;
-
-                // Extract only the required fields: name, email, profilePicture
                 const simplifiedFollowers = followingIds.map(follower => ({
                     name: follower.name,
                     email: follower.email,
                     profilePicture: follower.profilePicture
                 }));
-
-                console.log("Simplified Followers:", simplifiedFollowers);
                 set({ followers: simplifiedFollowers });
             } else {
                 set({ followers: [] });
             }
         } catch (error) {
+            set({ followers: [] });
             console.log(error);
         } finally {
             set({ isLoadingFollowers: false });
@@ -46,19 +41,21 @@ export const usePeoples = create((set) => ({
             const res = await axiosInstance.get('/message/alluser', { params: { search } });
             set({ allusers: res.data.alluser });
         } catch (error) {
+            set({ allusers: [] });
             console.log(error);
         } finally {
             set({ isLoadingAllUsers: false });
         }
     },
+
     fetchPendingRequest: async () => {
         try {
             set({ isLoadingPendingRequest: true });
             const res = await axiosInstance.get('/follower/get-pendingrequestuser');
-            const pendingRequest = res.data.pendingrequest;
-            set({ pendingrequestUsers: pendingRequest });
-            console.log("Pending Request:", pendingRequest);
+            set({ pendingrequestUsers: res.data.pendingrequest });
+            console.log("Pending Request:", res.data.pendingrequest);
         } catch (error) {
+            set({ pendingrequestUsers: [] });
             console.log(error);
         } finally {
             set({ isLoadingPendingRequest: false });
@@ -69,17 +66,10 @@ export const usePeoples = create((set) => ({
         try {
             set({ isLoadingSendingRequest: true });
             const res = await axiosInstance.get('/follower/get-sendingrequestuser');
-            const pending = usePeoples.getState().pendingrequestUsers;
-            const pendingIds = new Set(pending.map(u => u._id));
-
-            // Filter out users who are already in pending request
-            const filteredSending = res.data.sendingrequest.filter(
-                (u) => !pendingIds.has(u._id)
-            );
-            console.log("Sending Request:", filteredSending);
-
-            set({ sendingRequestUsers: filteredSending });
+            set({ sendingRequestUsers: res.data.sendingrequest });
+            console.log("Sending Request:", res.data.sendingrequest);
         } catch (error) {
+            set({ sendingRequestUsers: [] });
             console.log(error);
         } finally {
             set({ isLoadingSendingRequest: false });
@@ -93,7 +83,6 @@ export const usePeoples = create((set) => ({
                 toast.success(
                     "Request sent successfully"
                 )
-
             }
             else {
                 toast.error(
