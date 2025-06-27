@@ -118,7 +118,10 @@ export const usePeoples = create((set) => ({
         try {
             const res = await axiosInstance.post('/follower/reject-request', { rejectrequestId: userId });
             if (res.status === 200) {
+                // Refresh all relevant lists for real-time sync
                 usePeoples.getState().fetchPendingRequest();
+                usePeoples.getState().fetchSendingRequest();
+                usePeoples.getState().fetchFollowers();
                 toast.success(
                     "Request rejected successfully"
                 )
