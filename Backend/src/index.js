@@ -29,12 +29,25 @@ app.use(
   })
 );
 
-// ✅ Prevent malformed paths from crashing app
+// ✅ Middleware to block malformed or unsafe URLs
+
+// 1. Reject invalid URL encodings (e.g., /%:) or /%ZZ)
+app.use((req, res, next) => {
+  try {
+    decodeURIComponent(req.path);
+  } catch (err) {
+    console.error("❌ Malformed path (decode failed):", req.url);
+    return res.status(400).send("Malformed URL");
+  }
+  next();
+});
+
+// 2. Block invalid Express-style dynamic patterns like /:)
 app.use((req, res, next) => {
   const invalidPattern = /\/:[^\w]/;
   if (invalidPattern.test(req.path)) {
-    console.error("❌ Blocked malformed route:", req.path);
-    return res.status(400).send("Malformed route");
+    console.error("❌ Blocked malformed route pattern:", req.path);
+    return res.status(400).send("Malformed route pattern");
   }
   next();
 });
