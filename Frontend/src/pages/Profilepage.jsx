@@ -4,7 +4,7 @@ import { useAuth } from '../StoreValues/useAuth.Store';
 import { usePeoples } from '../StoreValues/peoples.store';
 import { Camera, Mail, User } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import avatar from '../assets/avatar-default-symbolic.svg'; // Default avatar image
+import avatar from '../assets/avatar-default-symbolic.svg';
 import { Navigate } from 'react-router-dom';
 
 const ProfilePage = () => {
@@ -52,19 +52,20 @@ const ProfilePage = () => {
       });
 
     } catch (error) {
-
       console.error(error);
     }
   };
 
   return (
     <div className="flex flex-col md:flex-row justify-center items-start px-4 pt-24 pb-4 gap-4 min-h-screen overflow-auto">
+      {/* Left Side - Profile */}
       <div className="w-full md:w-1/2 max-w-xl bg-base-300 rounded-xl p-6 space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-semibold">Profile</h1>
           <p className="text-sm text-zinc-400">Your profile information</p>
         </div>
 
+        {/* Profile Image Upload */}
         <div
           onDrop={(e) => {
             e.preventDefault();
@@ -77,7 +78,7 @@ const ProfilePage = () => {
             }
           }}
           onDragOver={(e) => e.preventDefault()}
-          className="relative w-32 h-32 rounded-full border-4 overflow-hidden mx-auto shadow-md"
+          className="relative w-32 h-32 rounded-full border-4 overflow-hidden mx-auto shadow-md group"
         >
           <img
             src={selectedImg || authuser.profilePicture || avatar}
@@ -86,9 +87,9 @@ const ProfilePage = () => {
           />
           <label
             htmlFor="avatar-upload"
-            className={`absolute -bottom-3 -right-3 bg-white hover:scale-105 p-2 rounded-full cursor-pointer transition-all duration-200 border-2 border-white shadow-xl ${isUpdateProfile ? 'animate-pulse pointer-events-none' : ''}`}
+            className={`absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity duration-200`}
           >
-            <Camera className="w-5 h-5 text-black z-10" />
+            <Camera className="w-6 h-6 text-white z-10" />
             <input
               type="file"
               id="avatar-upload"
@@ -100,6 +101,9 @@ const ProfilePage = () => {
           </label>
         </div>
 
+        <p className="text-center text-xs text-zinc-400">Click camera or drag & drop to upload photo</p>
+
+        {/* Form */}
         <div className="space-y-4">
           <div>
             <label className="text-sm text-zinc-400 flex items-center gap-2">
@@ -133,6 +137,7 @@ const ProfilePage = () => {
         </div>
       </div>
 
+      {/* Right Side - Requests */}
       <div className="w-full md:w-1/2 max-w-xl bg-base-300 rounded-xl p-6 space-y-6">
         <h2 className="text-2xl font-semibold text-center">Followers & Requests</h2>
 
@@ -174,7 +179,6 @@ const ProfilePage = () => {
                       acceptFollowRequest(request._id);
                       fetchPendingRequest();
                       Navigate("/profile");
-                      // Refresh pending requests
                     }}
                     className="px-3 py-1 text-white bg-green-600 rounded-lg text-sm"
                   >
@@ -183,7 +187,7 @@ const ProfilePage = () => {
                   <button
                     onClick={() => {
                       rejectFollowRequest(request._id);
-                      fetchPendingRequest(); // Refresh pending requests
+                      fetchPendingRequest();
                       Navigate("/profile");
                     }}
                     className="px-3 py-1 text-white bg-red-600 rounded-lg text-sm"
@@ -209,7 +213,6 @@ const ProfilePage = () => {
                   />
                   <span className="font-medium">{request.name}</span>
                 </div>
-
               </div>
             ))}
           </div>
