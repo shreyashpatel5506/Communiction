@@ -53,7 +53,6 @@ export const usePeoples = create((set) => ({
             set({ isLoadingPendingRequest: true });
             const res = await axiosInstance.get('/follower/get-pendingrequestuser');
             set({ pendingrequestUsers: res.data.pendingrequest });
-            console.log("Pending Request:", res.data.pendingrequest);
         } catch (error) {
             set({ pendingrequestUsers: [] });
             console.log(error);
@@ -67,7 +66,6 @@ export const usePeoples = create((set) => ({
             set({ isLoadingSendingRequest: true });
             const res = await axiosInstance.get('/follower/get-sendingrequestuser');
             set({ sendingRequestUsers: res.data.sendingrequest });
-            console.log("Sending Request:", res.data.sendingrequest);
         } catch (error) {
             set({ sendingRequestUsers: [] });
             console.log(error);
@@ -89,7 +87,7 @@ export const usePeoples = create((set) => ({
                     "Request already sent or try again"
                 )
             }
-            console.log(res.data.message);
+
         } catch (error) {
             console.log(error);
         }
@@ -109,7 +107,7 @@ export const usePeoples = create((set) => ({
                     "Request already accepted or try again"
                 )
             }
-            console.log(res.data.message);
+
         } catch (error) {
             console.log(error);
         }

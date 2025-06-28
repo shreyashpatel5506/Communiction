@@ -23,7 +23,6 @@ export const useAuth = create((set, get) => ({
             if (authuser) {
                 set({ authuser });
                 localStorage.setItem('authuser', JSON.stringify(authuser));
-                console.log("Authenticated user:", authuser);
 
                 // Connect socket after checking auth
                 get().connectSocket();
@@ -177,14 +176,12 @@ export const useAuth = create((set, get) => ({
 
         socket.on('getOnlineUsers', (userIds) => {
             set({ onlineUsers: userIds });
-            console.log("Online users updated:", userIds);
         });
     },
     disconnectSocket: () => {
         const { socket } = get();
         if (socket) {
             socket.disconnect();
-            console.log("Socket disconnected");
         }
     }
 }));
