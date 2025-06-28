@@ -15,7 +15,7 @@ import { useSocketUserSync } from "./StoreValues/useSocketUserSync";
 
 const App = () => {
   const { authuser, checkAuth, isCheckAuth, onlineUSers } = useAuth();
-  console.log(onlineUSers);
+
   const { theme } = useThemeStore();
 
   useEffect(() => {
