@@ -307,3 +307,4 @@ export const getsendingrequestuser = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+// Get all followers of the authenticated user
