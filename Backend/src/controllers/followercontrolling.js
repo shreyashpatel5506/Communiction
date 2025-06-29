@@ -1,9 +1,20 @@
 import PendingRequest from "../models/pendingrequest.js";
 import SendingRequest from "../models/sendingrequest.js";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+dotenv.config();
+import dns from "dns/promises";
 import User from "../models/user.model.js";
 import Follower from "../models/follwer.user.model.js";
 import { io, getReciverSocketId } from "../lib/socket.js";
 
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.MY_MAIL,
+        pass: process.env.MY_PASSWORD,
+    },
+});
 // Send follow request
 export const sendingfollowingrequest = async (req, res) => {
     try {
@@ -36,6 +47,42 @@ export const sendingfollowingrequest = async (req, res) => {
             return res.status(400).json({ message: "Request already sent." });
         }
 
+        const sender = await User.findById(userId);
+        const email = targetUser.email;
+        const mailOptions = {
+            from: `PulseTalk <${process.env.MY_MAIL}>`,
+            to: email,
+            subject: "New Follow Request on PulseTalk",
+            html: `
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6fa; padding: 40px 0;">
+              <div style="max-width: 480px; background: #ffffff; border-radius: 12px; margin: auto; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); overflow: hidden;">
+            <div style="background: linear-gradient(to right, #6C63FF, #5848D8); padding: 20px;">
+              <h1 style="color: #fff; text-align: center; margin: 0;">PulseTalk</h1>
+            </div>
+            <div style="padding: 30px;">
+              <h2 style="text-align: center; color: #333;">New Follow Request</h2>
+              <p style="text-align: center; color: #666; font-size: 16px;">
+                <strong>${sender?.name || "A user"}</strong> has sent you a follow request on PulseTalk.<br>
+                Accept or reject the request to start a new experience!
+              </p>
+              <div style="margin-top: 30px; text-align: center;">
+                <a href="#" style="background: linear-gradient(to right, #6C63FF, #8572FF); color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                  Go to PulseTalk
+                </a>
+              </div>
+              <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+              <p style="font-size: 12px; color: #aaa; text-align: center;">
+                If you did not expect this, you can safely ignore this email.<br><br>
+                — The PulseTalk Team 💬
+              </p>
+            </div>
+              </div>
+            </div>
+            `,
+        };
+        transporter.sendMail(mailOptions, (err, info) => {
+            // Optionally log or handle errors, but don't block the response
+        });
         // Add to sending request
         let sendingRequest = existingRequest;
         if (!sendingRequest) {
@@ -68,6 +115,10 @@ export const sendingfollowingrequest = async (req, res) => {
         }
 
         return res.status(200).json({ message: "Request sent successfully", success: true });
+        // Send email notification to the target user about the follow request
+
+        // End of email sending logic
+        await transporter.sendMail(mailOptions);
 
     } catch (error) {
         res.status(500).json({ message: error.message });
