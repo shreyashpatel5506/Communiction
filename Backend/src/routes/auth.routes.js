@@ -1,35 +1,32 @@
+// auth.routes.js or directly in your main server file
 import express from "express";
-import {
-  signup,
-  verifyOTP,
-  sendOtp,
-  login,
-  updateprofile,
-  checkauth,
-  logout,
-  forgotPassword
-} from "../controllers/auth.controllers.js";
+import dotenv from "dotenv";
+dotenv.config();
 import { protectRoute } from "../middlewears/auth.middlewear.js";
+import { createAuthModule } from "authbackendpackage";
+import userModel from "../models/user.model.js";
+import cloudinary from "../lib/cloudinary.js";
 
 const router = express.Router();
 
-// Test endpoint to verify middleware is working
-router.post('/test', (req, res) => {
-  console.log("Test endpoint - req.body:", req.body);
-  res.json({
-    message: "Test successful",
-    receivedBody: req.body,
-    bodyType: typeof req.body
-  });
+// Create auth module instance
+const auth = createAuthModule({
+  userModel,
+  cloudinaryInstance: cloudinary,
+  jwtSecret: process.env.JWT_SECRET,
+  mailUser: process.env.MY_MAIL,
+  mailPass: process.env.MY_PASSWORD,
+  env: process.env.NODE_ENV,
 });
 
-router.post('/send-Otp', sendOtp);
-router.post('/verify-Otp', verifyOTP);
-router.post('/signup', signup);
-router.post('/login', login);
-router.put('/update-profile', protectRoute, updateprofile);
-router.get('/check', checkauth);
-router.post('/logout', logout);
-router.post('/forgot-password', forgotPassword);
+// Attach all routes
+router.post("/send-otp", auth.sendOtp);
+router.post("/verify-otp", auth.verifyOTP);
+router.post("/signup", auth.signup);
+router.post("/login", auth.login);
+router.post("/logout", auth.logout);
+router.put("/update-profile", protectRoute, auth.updateProfile);
+router.get("/check", auth.checkAuth);
+router.post("/forgot-password", auth.forgotPassword);
 
 export default router;

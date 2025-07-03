@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "authbackendpackage": "^1.1.1",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.6.1",
     "communiction": "file:..",
