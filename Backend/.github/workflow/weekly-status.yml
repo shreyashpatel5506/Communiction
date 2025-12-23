@@ -1,0 +1,33 @@
+name: Weekly Project Status Update
+
+on:
+  schedule:
+    - cron: "0 4 * * 2" # Every Tuesday (UTC)
+  workflow_dispatch:
+
+jobs:
+  status-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update project status
+        run: |
+          echo "# Project Status – PulseTalk" > STATUS.md
+          echo "" >> STATUS.md
+          echo "PulseTalk is actively maintained as a real-time chat application." >> STATUS.md
+          echo "" >> STATUS.md
+          echo "- Stack: React, Node.js, Express, Socket.IO" >> STATUS.md
+          echo "- Security: JWT, Cloudinary" >> STATUS.md
+          echo "- Focus: Stability, performance, and UX" >> STATUS.md
+          echo "" >> STATUS.md
+          echo "Last reviewed: $(date -u)" >> STATUS.md
+
+      - name: Commit weekly status update
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add STATUS.md
+          git commit -m "docs: weekly project status update (PulseTalk)" || echo "No changes to commit"
+          git push
