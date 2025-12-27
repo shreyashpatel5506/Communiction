@@ -1,6 +1,6 @@
 # PulseTalk - Live Chat Platform
 
-PulseTalk is a modern live chat web application enabling real-time conversations, image and emoji sharing, and follower-based networking. It’s fully responsive, supports advanced theming, and offers robust security features including 2FA for all authentication flows.
+PulseTalk is a modern live chat web enabling real-time conversations, image and emoji sharing, and follower-based networking. It’s fully responsive, supports advanced theming, and offers robust security features including 2FA for all authentication flows.
 
 ---
 ## 🌐 Live Website
