@@ -14,8 +14,7 @@ const auth = createAuthModule({
   userModel,
   cloudinaryInstance: cloudinary,
   jwtSecret: process.env.JWT_SECRET,
-  mailUser: process.env.MY_MAIL,
-  mailPass: process.env.MY_PASSWORD,
+  
   env: process.env.NODE_ENV,
 });
 
