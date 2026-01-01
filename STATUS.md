@@ -1,6 +1,9 @@
 # Project Status – PulseTalk
 
-This file reflects the ongoing health and maintenance of the PulseTalk
-real-time communication platform.
+PulseTalk is actively maintained as a real-time chat application.
 
-Last reviewed: never
+- Stack: React, Node.js, Express, Socket.IO
+- Security: JWT, Cloudinary
+- Focus: Stability, performance, and UX
+
+Last reviewed: Thu Jan  1 04:21:51 UTC 2026
