@@ -14,7 +14,7 @@
   "dependencies": {
     "authbackendpackage": "^1.1.11",
     "bcryptjs": "^3.0.2",
-    "cloudinary": "^2.6.1",
+    "cloudinary": "^2.7.0",
     "communiction": "file:..",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -25,7 +25,7 @@
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.2",
-    "nodemailer": "^7.0.3",
+    "nodemailer": "^7.0.7",
     "otp-verify": "^1.0.5",
     "path": "^0.12.7",
     "socket.io": "^4.8.1"
